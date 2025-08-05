@@ -7,6 +7,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "tb_usuario")
 @NoArgsConstructor
@@ -22,4 +25,7 @@ public class Usuario {
     private String email;
     private String senha;
     private Perfil perfil;
+
+    @OneToMany(mappedBy = "usuario")
+    private List<Reserva> reservas = new ArrayList<>();
 }

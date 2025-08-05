@@ -1,5 +1,6 @@
 package br.com.reservahotel.reserva_hotel.model;
 
+import br.com.reservahotel.reserva_hotel.model.enums.StatusReserva;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,4 +24,13 @@ public class Reserva {
     private LocalDate checkin;
     private LocalDate checkout;
     private BigDecimal valorTotal;
+    private StatusReserva status;
+
+    @ManyToOne
+    @JoinColumn(name = "usuario_id")
+    private Usuario usuario;
+
+    @ManyToOne
+    @JoinColumn(name = "quarto_id")
+    private Quarto quarto;
 }

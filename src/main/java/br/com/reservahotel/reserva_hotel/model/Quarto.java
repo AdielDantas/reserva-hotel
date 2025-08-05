@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "tb_quarto")
@@ -21,4 +23,7 @@ public class Quarto {
     private Long id;
     private BigDecimal valorDiária;
     private Boolean disponível;
+
+    @OneToMany(mappedBy = "quartos")
+    private List<Quarto> quartos = new ArrayList<>();
 }
