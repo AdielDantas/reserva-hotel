@@ -6,6 +6,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 @Entity
 @Table(name = "tb_reserva")
@@ -33,4 +34,10 @@ public class Reserva {
     @ManyToOne
     @JoinColumn(name = "quarto_id")
     private Quarto quarto;
+
+    @PrePersist
+    public void calcularValorTotal() {
+        long dias = ChronoUnit.DAYS.between(checkin, checkout);
+        this.valorTotal = quarto.getValorDiaria().multiply(BigDecimal.valueOf(dias));
+    }
 }

@@ -19,9 +19,10 @@ public class Quarto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private BigDecimal valorDiária;
-    private Boolean disponível;
+    private BigDecimal valorDiaria;
+    private Boolean disponivel;
 
-    @OneToMany(mappedBy = "quartos")
-    private List<Quarto> quartos = new ArrayList<>();
+    @OneToMany(mappedBy = "quarto")
+    private List<Reserva> reservas = new ArrayList<>();
+
 }
