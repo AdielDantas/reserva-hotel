@@ -7,18 +7,20 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Entity
-@Table(name = "tb_quarto")
+@Table(name = "tb_reserva")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public class Quarto {
+public class Reserva {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private BigDecimal valorDiária;
-    private Boolean disponível;
+    private LocalDate checkin;
+    private LocalDate checkout;
+    private BigDecimal valorTotal;
 }
