@@ -1,6 +1,7 @@
 package br.com.reservahotel.reserva_hotel.model.dto;
 
 import br.com.reservahotel.reserva_hotel.model.entities.Reserva;
+import br.com.reservahotel.reserva_hotel.model.entities.Usuario;
 import br.com.reservahotel.reserva_hotel.model.enums.Perfil;
 import lombok.AllArgsConstructor;
 import lombok.Data;
