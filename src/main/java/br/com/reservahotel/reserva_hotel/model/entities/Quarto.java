@@ -1,4 +1,4 @@
-package br.com.reservahotel.reserva_hotel.model;
+package br.com.reservahotel.reserva_hotel.model.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
