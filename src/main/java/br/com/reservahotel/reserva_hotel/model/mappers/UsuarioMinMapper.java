@@ -1,5 +1,6 @@
 package br.com.reservahotel.reserva_hotel.model.mappers;
 
+import br.com.reservahotel.reserva_hotel.model.dto.UsuarioDTO;
 import br.com.reservahotel.reserva_hotel.model.dto.UsuarioMinDTO;
 import br.com.reservahotel.reserva_hotel.model.entities.Usuario;
 import org.mapstruct.Mapper;

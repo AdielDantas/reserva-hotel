@@ -14,5 +14,5 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     Optional<Usuario> findByEmail(String email);
 
     @Query("SELECT u FROM Usuario u LEFT JOIN FETCH u.reservas WHERE u.id = :id")
-    Optional<Usuario> buscarPorIdComReservas(@Param("id") Long id);
+    Optional<Usuario> buscarUsuarioPorIdComReservas(@Param("id") Long id);
 }
