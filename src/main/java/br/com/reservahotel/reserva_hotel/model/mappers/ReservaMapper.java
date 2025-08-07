@@ -6,7 +6,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {QuartoMinMapper.class, UsuarioMinMapper.class})
 public interface ReservaMapper {
 
     ReservaDTO toDto(Reserva reserva);
@@ -16,3 +16,4 @@ public interface ReservaMapper {
 
     void updateEntityFromDto(ReservaDTO reservaDTO, @MappingTarget Reserva reserva);
 }
+

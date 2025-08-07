@@ -19,8 +19,8 @@ public class UsuarioService {
     private UsuarioMapper mapper;
 
     @Transactional(readOnly = true)
-    public UsuarioDTO buscarPorId(Long id) {
-        Usuario usuario = repository.findById(id).orElseThrow(
+    public UsuarioDTO buscarPorIdComReservas(Long id) {
+        Usuario usuario = repository.buscarPorIdComReservas(id).orElseThrow(
                 () -> new ResourceNotFoundException("Usuário não encontrado com o ID: " + id));
         return mapper.toDto(usuario);
     }

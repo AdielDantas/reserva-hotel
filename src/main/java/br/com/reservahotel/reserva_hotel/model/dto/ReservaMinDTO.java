@@ -11,13 +11,11 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReservaDTO {
+public class ReservaMinDTO {
 
     private Long id;
     private LocalDate checkin;
     private LocalDate checkout;
     private BigDecimal valorTotal;
     private StatusReserva status;
-    private QuartoMinDTO quarto;
-    private UsuarioMinDTO usuario;
 }

@@ -11,10 +11,9 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class QuartoDTO {
+public class QuartoMinDTO {
 
     private Long id;
     private BigDecimal valorDiaria;
     private Boolean disponivel;
-    private List<ReservaMinDTO> reservas = new ArrayList<>();
 }

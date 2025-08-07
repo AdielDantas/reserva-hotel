@@ -6,13 +6,14 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {ReservaMinMapper.class})
 public interface QuartoMapper {
 
     QuartoDTO toDto(Quarto quarto);
 
     @Mapping(target = "id", ignore = true)
-    Quarto toEntity(Quarto quarto);
+    Quarto toEntity(QuartoDTO quarto);
 
     void updateEntityFromDto(QuartoDTO quartoDTO, @MappingTarget Quarto quarto);
 }
+

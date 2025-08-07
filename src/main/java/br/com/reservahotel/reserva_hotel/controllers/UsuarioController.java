@@ -17,8 +17,8 @@ public class UsuarioController {
     private UsuarioService service;
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<UsuarioDTO> buscarPorId(@PathVariable Long id) {
-        UsuarioDTO usuarioDTO = service.buscarPorId(id);
+    public ResponseEntity<UsuarioDTO> buscarPorIdComReserva(@PathVariable Long id) {
+        UsuarioDTO usuarioDTO = service.buscarPorIdComReservas(id);
         return ResponseEntity.ok(usuarioDTO);
     }
 }

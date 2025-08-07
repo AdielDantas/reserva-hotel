@@ -19,5 +19,5 @@ public class UsuarioDTO {
     private String nome;
     private String email;
     private Perfil perfil;
-    private List<Reserva> reservas = new ArrayList<>();
+    private List<ReservaDTO> reservas = new ArrayList<>();
 }
