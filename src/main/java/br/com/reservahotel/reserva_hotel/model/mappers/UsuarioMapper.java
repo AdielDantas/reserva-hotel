@@ -16,8 +16,11 @@ public interface UsuarioMapper {
     UsuarioDTO toDto(Usuario usuario);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "senha", ignore = true)
     Usuario toEntity(UsuarioDTO usuarioDTO);
 
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "senha", ignore = true)
     void updateEntityFromDto(UsuarioDTO usuarioDTO, @MappingTarget Usuario usuario);
 }
 

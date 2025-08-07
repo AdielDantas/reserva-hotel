@@ -1,9 +1,11 @@
 package br.com.reservahotel.reserva_hotel.services;
 
 import br.com.reservahotel.reserva_hotel.exceptions.ResourceNotFoundException;
+import br.com.reservahotel.reserva_hotel.model.dto.NovoUsuarioDTO;
 import br.com.reservahotel.reserva_hotel.model.dto.UsuarioDTO;
 import br.com.reservahotel.reserva_hotel.model.dto.UsuarioMinDTO;
 import br.com.reservahotel.reserva_hotel.model.entities.Usuario;
+import br.com.reservahotel.reserva_hotel.model.mappers.NovoUsuarioMapper;
 import br.com.reservahotel.reserva_hotel.model.mappers.UsuarioMapper;
 import br.com.reservahotel.reserva_hotel.model.mappers.UsuarioMinMapper;
 import br.com.reservahotel.reserva_hotel.repositories.UsuarioRepository;
@@ -25,6 +27,9 @@ public class UsuarioService {
     @Autowired
     private UsuarioMinMapper usuarioMinMapper;
 
+    @Autowired
+    private NovoUsuarioMapper novoUsuarioMapper;
+
     @Transactional(readOnly = true)
     public UsuarioDTO buscarUsuarioPorIdComReservas(Long id) {
         Usuario usuario = repository.buscarUsuarioPorIdComReservas(id).orElseThrow(
@@ -43,5 +48,12 @@ public class UsuarioService {
     public Page<UsuarioMinDTO> buscarTodosUsuarosPaginados(Pageable pageable) {
         Page<Usuario> page = repository.findAll(pageable);
         return page.map(usuarioMinMapper::toUsuarioResumoDto);
+    }
+
+    @Transactional
+    public UsuarioDTO salvarNovoUsuario(NovoUsuarioDTO novoUsuarioDTO) {
+        Usuario usuario = novoUsuarioMapper.toEntity(novoUsuarioDTO);
+        usuario = repository.save(usuario);
+        return usuarioMapper.toDto(usuario);
     }
 }
