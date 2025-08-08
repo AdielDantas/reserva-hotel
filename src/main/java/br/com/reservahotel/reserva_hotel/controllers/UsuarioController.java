@@ -54,4 +54,10 @@ public class UsuarioController {
         UsuarioDTO usuarioDTO = service.atualizarUsuarioPorId(id, novoUsuarioDTO);
         return ResponseEntity.ok(usuarioDTO);
     }
+
+    @DeleteMapping(value = "/id/{id}")
+    public ResponseEntity<Void> deletarUsuarioPorId(@PathVariable Long id) {
+        service.deletarUsuarioPorId(id);
+        return ResponseEntity.noContent().build();
+    }
 }
