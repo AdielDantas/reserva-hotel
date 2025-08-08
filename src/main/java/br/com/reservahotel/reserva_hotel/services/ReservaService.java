@@ -33,4 +33,11 @@ public class ReservaService {
         List<Reserva> reservas = repository.findByUsuarioId(usuarioId);
         return reservas.stream().map(reservaMapper::toDto).collect(Collectors.toList());
     }
+
+    @Transactional
+    public ReservaDTO criarReserva(ReservaDTO reservaDTO) {
+        Reserva reserva = reservaMapper.toEntity(reservaDTO);
+        reserva = repository.save(reserva);
+        return reservaMapper.toDto(reserva);
+    }
 }

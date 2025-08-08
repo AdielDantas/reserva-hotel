@@ -29,4 +29,14 @@ public class ReservaController {
         return ResponseEntity.ok(reservas);
     }
 
+    @PostMapping
+    public ResponseEntity<ReservaDTO> criarReserva(@RequestBody ReservaDTO reservaDTO) {
+        ReservaDTO reservaCriada = service.criarReserva(reservaDTO);
+        URI uri = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(reservaCriada.getId())
+                .toUri();
+        return ResponseEntity.created(uri).body(reservaCriada);
+    }
 }
