@@ -48,4 +48,10 @@ public class UsuarioController {
                 .toUri();
         return ResponseEntity.created(uri).body(usuarioDTO);
     }
+
+    @PutMapping(value = "/id/{id}")
+    public ResponseEntity<UsuarioDTO> atualizarUsuario(@PathVariable Long id, @RequestBody NovoUsuarioDTO novoUsuarioDTO) {
+        UsuarioDTO usuarioDTO = service.atualizarUsuarioPorId(id, novoUsuarioDTO);
+        return ResponseEntity.ok(usuarioDTO);
+    }
 }
