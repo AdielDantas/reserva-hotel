@@ -3,8 +3,10 @@ package br.com.reservahotel.reserva_hotel.services;
 import br.com.reservahotel.reserva_hotel.exceptions.DataBaseException;
 import br.com.reservahotel.reserva_hotel.exceptions.ResourceNotFoundException;
 import br.com.reservahotel.reserva_hotel.model.dto.ReservaDTO;
+import br.com.reservahotel.reserva_hotel.model.entities.Quarto;
 import br.com.reservahotel.reserva_hotel.model.entities.Reserva;
 import br.com.reservahotel.reserva_hotel.model.mappers.ReservaMapper;
+import br.com.reservahotel.reserva_hotel.repositories.QuartoRepository;
 import br.com.reservahotel.reserva_hotel.repositories.ReservaRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,9 @@ public class ReservaService {
     @Autowired
     private ReservaMapper reservaMapper;
 
+    @Autowired
+    private QuartoRepository quartoRepository;
+
     @Transactional(readOnly = true)
     public ReservaDTO buscarReservaPorId(Long id) {
         Reserva reserva = repository.findById(id).orElseThrow(
@@ -40,18 +45,47 @@ public class ReservaService {
 
     @Transactional
     public ReservaDTO criarReserva(ReservaDTO reservaDTO) {
-        Reserva reserva = reservaMapper.toEntity(reservaDTO);
-        reserva = repository.save(reserva);
-        return reservaMapper.toDto(reserva);
-    }
+
+        Quarto quarto = quartoRepository.findById(reservaDTO.getQuarto().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Quarto não encontrado"));
+
+        if (!quarto.getDisponivel()) {
+            throw new IllegalStateException("Este quarto já está reservado");
+        }
+            Reserva reserva = reservaMapper.toEntity(reservaDTO);
+            reserva = repository.save(reserva);
+            quarto.setDisponivel(false);
+            return reservaMapper.toDto(reserva);
+        }
 
     @Transactional
     public ReservaDTO atualizarReserva(Long id, ReservaDTO reservaDTO) {
+
         try {
-            Reserva reserva = repository.getReferenceById(id);
-            reservaMapper.updateEntityFromDto(reservaDTO, reserva);
-            reserva = repository.save(reserva);
-            return reservaMapper.toDto(reserva);
+
+            Reserva reservaExistente = repository.findById(reservaDTO.getQuarto().getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Quarto não encontrado"));
+
+            if (!reservaExistente.getQuarto().getId().equals(reservaDTO.getQuarto().getId())) {
+                Quarto quartoAntigo = reservaExistente.getQuarto();
+                quartoAntigo.setDisponivel(true);
+                quartoRepository.save(quartoAntigo);
+            }
+
+            Quarto novoQuarto = quartoRepository.findById(reservaDTO.getQuarto().getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Quarto não encontrado"));
+
+            if (!novoQuarto.getDisponivel()) {
+                throw new IllegalStateException("Este quarto já está reservado");
+            }
+
+            reservaMapper.updateEntityFromDto(reservaDTO, reservaExistente);
+            Reserva reservaAtualizada = repository.save(reservaExistente);
+
+            novoQuarto.setDisponivel(false);
+            quartoRepository.save(novoQuarto);
+
+            return reservaMapper.toDto(reservaAtualizada);
         }
         catch (EntityNotFoundException e) {
             throw new ResourceNotFoundException("Reserva não encontrada com o ID: " + id);
