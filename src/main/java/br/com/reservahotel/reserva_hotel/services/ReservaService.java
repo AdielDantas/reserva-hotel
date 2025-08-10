@@ -5,6 +5,7 @@ import br.com.reservahotel.reserva_hotel.model.dto.ReservaDTO;
 import br.com.reservahotel.reserva_hotel.model.entities.Reserva;
 import br.com.reservahotel.reserva_hotel.model.mappers.ReservaMapper;
 import br.com.reservahotel.reserva_hotel.repositories.ReservaRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,5 +40,20 @@ public class ReservaService {
         Reserva reserva = reservaMapper.toEntity(reservaDTO);
         reserva = repository.save(reserva);
         return reservaMapper.toDto(reserva);
+    }
+
+    @Transactional
+    public ReservaDTO atualizarReserva(Long id, ReservaDTO reservaDTO) {
+        try {
+            Reserva reserva = repository.getReferenceById(id);
+            reservaMapper.updateEntityFromDto(reservaDTO, reserva);
+            reserva = repository.save(reserva);
+            return reservaMapper.toDto(reserva);
+        }
+        catch (EntityNotFoundException e) {
+            throw new ResourceNotFoundException("Usuário não encontrado com o ID: " + id);
+        }
+
+
     }
 }

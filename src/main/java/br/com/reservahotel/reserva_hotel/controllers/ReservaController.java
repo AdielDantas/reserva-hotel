@@ -39,4 +39,10 @@ public class ReservaController {
                 .toUri();
         return ResponseEntity.created(uri).body(reservaCriada);
     }
+
+    @PutMapping(value = "/id/{id}")
+    public ResponseEntity<ReservaDTO> atualizarReserva(@PathVariable Long id, @RequestBody ReservaDTO reservaDTO) {
+        ReservaDTO reservaAtualizada = service.atualizarReserva(id, reservaDTO);
+        return ResponseEntity.ok(reservaAtualizada);
+    }
 }

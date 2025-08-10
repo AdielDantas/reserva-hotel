@@ -14,6 +14,7 @@ public interface ReservaMapper {
     @Mapping(target = "id", ignore = true)
     Reserva toEntity(ReservaDTO reservaDTO);
 
+    @Mapping(target = "id", ignore = true)
     void updateEntityFromDto(ReservaDTO reservaDTO, @MappingTarget Reserva reserva);
 }
 
