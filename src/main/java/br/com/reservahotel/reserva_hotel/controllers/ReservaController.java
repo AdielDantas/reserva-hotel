@@ -45,4 +45,10 @@ public class ReservaController {
         ReservaDTO reservaAtualizada = service.atualizarReserva(id, reservaDTO);
         return ResponseEntity.ok(reservaAtualizada);
     }
+
+    @DeleteMapping(value = "/id/{id}")
+    public ResponseEntity<Void> deletarReservaPorId(@PathVariable Long id) {
+        service.deletarReservaPorId(id);
+        return ResponseEntity.noContent().build();
+    }
 }

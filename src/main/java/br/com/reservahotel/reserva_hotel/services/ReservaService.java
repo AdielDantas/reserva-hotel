@@ -1,5 +1,6 @@
 package br.com.reservahotel.reserva_hotel.services;
 
+import br.com.reservahotel.reserva_hotel.exceptions.DataBaseException;
 import br.com.reservahotel.reserva_hotel.exceptions.ResourceNotFoundException;
 import br.com.reservahotel.reserva_hotel.model.dto.ReservaDTO;
 import br.com.reservahotel.reserva_hotel.model.entities.Reserva;
@@ -7,7 +8,9 @@ import br.com.reservahotel.reserva_hotel.model.mappers.ReservaMapper;
 import br.com.reservahotel.reserva_hotel.repositories.ReservaRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -51,9 +54,20 @@ public class ReservaService {
             return reservaMapper.toDto(reserva);
         }
         catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException("Usuário não encontrado com o ID: " + id);
+            throw new ResourceNotFoundException("Reserva não encontrada com o ID: " + id);
         }
+    }
 
-
+    @Transactional(propagation = Propagation.SUPPORTS)
+    public void deletarReservaPorId(Long id) {
+        if (!repository.existsById(id)) {
+            throw new ResourceNotFoundException("Reserva não encontrado com o ID: " + id);
+        }
+        try {
+            repository.deleteById(id);
+        }
+        catch (DataIntegrityViolationException e) {
+            throw new DataBaseException("Falha de integridade referencial");
+        }
     }
 }
