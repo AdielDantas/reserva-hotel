@@ -1,0 +1,27 @@
+package br.com.reservahotel.reserva_hotel.services;
+
+import br.com.reservahotel.reserva_hotel.exceptions.ResourceNotFoundException;
+import br.com.reservahotel.reserva_hotel.model.dto.QuartoDTO;
+import br.com.reservahotel.reserva_hotel.model.entities.Quarto;
+import br.com.reservahotel.reserva_hotel.model.mappers.QuartoMapper;
+import br.com.reservahotel.reserva_hotel.repositories.QuartoRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+public class QuartoService {
+
+    @Autowired
+    private QuartoRepository repository;
+
+    @Autowired
+    QuartoMapper quartoMapper;
+
+    @Transactional
+    public QuartoDTO buscarQuartoPorId(Long id) {
+        Quarto quarto = repository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException("Usuário não encontrado com o ID: " + id));
+                return quartoMapper.toDto(quarto);
+    }
+}
