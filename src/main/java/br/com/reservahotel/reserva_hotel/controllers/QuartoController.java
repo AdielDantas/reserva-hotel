@@ -1,6 +1,7 @@
 package br.com.reservahotel.reserva_hotel.controllers;
 
 import br.com.reservahotel.reserva_hotel.model.dto.QuartoDTO;
+import br.com.reservahotel.reserva_hotel.model.dto.QuartoMinDTO;
 import br.com.reservahotel.reserva_hotel.services.QuartoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +27,12 @@ public class QuartoController {
     @GetMapping
     public ResponseEntity<List<QuartoDTO>> listarTodosOsQuartos() {
         List<QuartoDTO> quartos = service.listarTodosOsQuartos();
+        return ResponseEntity.ok(quartos);
+    }
+
+    @GetMapping(value = "/disponiveis")
+    public ResponseEntity<List<QuartoMinDTO>> listarQuartosDisponiveis() {
+        List<QuartoMinDTO> quartos = service.listarQuartosDisponiveis();
         return ResponseEntity.ok(quartos);
     }
 

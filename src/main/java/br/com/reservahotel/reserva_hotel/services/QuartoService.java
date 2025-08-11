@@ -3,8 +3,10 @@ package br.com.reservahotel.reserva_hotel.services;
 import br.com.reservahotel.reserva_hotel.exceptions.DataBaseException;
 import br.com.reservahotel.reserva_hotel.exceptions.ResourceNotFoundException;
 import br.com.reservahotel.reserva_hotel.model.dto.QuartoDTO;
+import br.com.reservahotel.reserva_hotel.model.dto.QuartoMinDTO;
 import br.com.reservahotel.reserva_hotel.model.entities.Quarto;
 import br.com.reservahotel.reserva_hotel.model.mappers.QuartoMapper;
+import br.com.reservahotel.reserva_hotel.model.mappers.QuartoMinMapper;
 import br.com.reservahotel.reserva_hotel.repositories.QuartoRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,17 +27,26 @@ public class QuartoService {
     @Autowired
     QuartoMapper quartoMapper;
 
+    @Autowired
+    QuartoMinMapper quartoMinMapper;
+
     @Transactional(readOnly = true)
     public QuartoDTO buscarQuartoPorId(Long id) {
         Quarto quarto = repository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("Usuário não encontrado com o ID: " + id));
-                return quartoMapper.toDto(quarto);
+        return quartoMapper.toDto(quarto);
     }
 
     @Transactional(readOnly = true)
     public List<QuartoDTO> listarTodosOsQuartos() {
         return repository.findAll()
                 .stream().map(quartoMapper::toDto).collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<QuartoMinDTO> listarQuartosDisponiveis() {
+        List<Quarto> quartos = repository.findByDisponivelTrue();
+        return quartos.stream().map(quartoMinMapper::toDto).collect(Collectors.toList());
     }
 
     @Transactional
@@ -52,8 +63,7 @@ public class QuartoService {
             quartoMapper.updateEntityFromDto(quartoDTO, quarto);
             quarto = repository.save(quarto);
             return quartoMapper.toDto(quarto);
-        }
-        catch (EntityNotFoundException e) {
+        } catch (EntityNotFoundException e) {
             throw new ResourceNotFoundException("Quarto não encontrado com o ID: " + id);
         }
     }
@@ -65,8 +75,7 @@ public class QuartoService {
         }
         try {
             repository.deleteById(id);
-        }
-        catch (DataIntegrityViolationException e) {
+        } catch (DataIntegrityViolationException e) {
             throw new DataBaseException("Falha de integridade referencial");
         }
     }
