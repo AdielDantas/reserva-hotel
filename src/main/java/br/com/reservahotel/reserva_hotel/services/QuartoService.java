@@ -57,4 +57,17 @@ public class QuartoService {
             throw new ResourceNotFoundException("Quarto não encontrado com o ID: " + id);
         }
     }
+
+    @Transactional(propagation = Propagation.SUPPORTS)
+    public void deletarQuarto(Long id) {
+        if (!repository.existsById(id)) {
+            throw new ResourceNotFoundException("Usuário não encontrado com o ID: " + id);
+        }
+        try {
+            repository.deleteById(id);
+        }
+        catch (DataIntegrityViolationException e) {
+            throw new DataBaseException("Falha de integridade referencial");
+        }
+    }
 }

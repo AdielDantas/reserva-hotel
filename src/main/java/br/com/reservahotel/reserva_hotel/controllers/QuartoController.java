@@ -45,4 +45,10 @@ public class QuartoController {
         QuartoDTO quartoDTO = service.atualizarQuarto(id, quartoAtualizado);
         return ResponseEntity.ok(quartoDTO);
     }
+
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<Void> deletarQuarto(@PathVariable Long id) {
+        service.deletarQuarto(id);
+        return ResponseEntity.noContent().build();
+    }
 }
