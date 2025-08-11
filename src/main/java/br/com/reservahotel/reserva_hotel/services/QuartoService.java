@@ -45,4 +45,16 @@ public class QuartoService {
         return quartoMapper.toDto(quarto);
     }
 
+    @Transactional
+    public QuartoDTO atualizarQuarto(Long id, QuartoDTO quartoDTO) {
+        try {
+            Quarto quarto = repository.getReferenceById(id);
+            quartoMapper.updateEntityFromDto(quartoDTO, quarto);
+            quarto = repository.save(quarto);
+            return quartoMapper.toDto(quarto);
+        }
+        catch (EntityNotFoundException e) {
+            throw new ResourceNotFoundException("Quarto não encontrado com o ID: " + id);
+        }
+    }
 }

@@ -40,4 +40,9 @@ public class QuartoController {
         return ResponseEntity.created(uri).body(quartoDTO);
     }
 
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<QuartoDTO> atualizarQuarto(@PathVariable Long id, @RequestBody QuartoDTO quartoAtualizado) {
+        QuartoDTO quartoDTO = service.atualizarQuarto(id, quartoAtualizado);
+        return ResponseEntity.ok(quartoDTO);
+    }
 }
