@@ -37,4 +37,12 @@ public class QuartoService {
         return repository.findAll()
                 .stream().map(quartoMapper::toDto).collect(Collectors.toList());
     }
+
+    @Transactional
+    public QuartoDTO criarQuarto(QuartoDTO quartoDTO) {
+        Quarto quarto = quartoMapper.toEntity(quartoDTO);
+        quarto = repository.save(quarto);
+        return quartoMapper.toDto(quarto);
+    }
+
 }

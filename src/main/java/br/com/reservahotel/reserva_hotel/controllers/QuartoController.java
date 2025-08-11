@@ -28,4 +28,16 @@ public class QuartoController {
         List<QuartoDTO> quartos = service.listarTodosOsQuartos();
         return ResponseEntity.ok(quartos);
     }
+
+    @PostMapping
+    public ResponseEntity<QuartoDTO> criarQuarto(@RequestBody QuartoDTO novoQuartoDTO) {
+        QuartoDTO quartoDTO = service.criarQuarto(novoQuartoDTO);
+        URI uri = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(quartoDTO.getId())
+                .toUri();
+        return ResponseEntity.created(uri).body(quartoDTO);
+    }
+
 }
