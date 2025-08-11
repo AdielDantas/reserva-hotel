@@ -1,5 +1,6 @@
 package br.com.reservahotel.reserva_hotel.model.entities;
 
+import br.com.reservahotel.reserva_hotel.model.enums.TipoQuarto;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,6 +22,9 @@ public class Quarto {
     private Long id;
     private BigDecimal valorDiaria;
     private Boolean disponivel;
+
+    @Enumerated(EnumType.STRING)
+    private TipoQuarto tipo;
 
     @OneToMany(mappedBy = "quarto")
     private List<Reserva> reservas = new ArrayList<>();

@@ -6,12 +6,12 @@ INSERT INTO tb_usuario (nome, email, senha, perfil) VALUES ('Maria Souza', 'mari
 INSERT INTO tb_usuario (nome, email, senha, perfil) VALUES ('Carlos Lima', 'carlos@email.com', '$2a$10$N7SkKCa3r17ga.i.dF9iy.BFUBL2n3b6Z1CWSZWi/qy7ABq/E6VpO', 'CLIENTE');
 
 -- Inserção de quartos
-INSERT INTO tb_quarto (valor_diaria, disponivel) VALUES (350.00, FALSE);  -- ocupado pela reserva abaixo
-INSERT INTO tb_quarto (valor_diaria, disponivel) VALUES (150.00, TRUE);
-INSERT INTO tb_quarto (valor_diaria, disponivel) VALUES (220.00, TRUE);
-INSERT INTO tb_quarto (valor_diaria, disponivel) VALUES (180.00, TRUE);
-INSERT INTO tb_quarto (valor_diaria, disponivel) VALUES (500.00, TRUE);
-INSERT INTO tb_quarto (valor_diaria, disponivel) VALUES (400.00, FALSE);  -- reservado mais abaixo
+INSERT INTO tb_quarto (valor_diaria, disponivel, tipo) VALUES (350.00, FALSE, 'LUXO');     -- ocupado
+INSERT INTO tb_quarto (valor_diaria, disponivel, tipo) VALUES (150.00, TRUE, 'ECONOMICO');
+INSERT INTO tb_quarto (valor_diaria, disponivel, tipo) VALUES (220.00, TRUE, 'STANDARD');
+INSERT INTO tb_quarto (valor_diaria, disponivel, tipo) VALUES (180.00, TRUE, 'ECONOMICO');
+INSERT INTO tb_quarto (valor_diaria, disponivel, tipo) VALUES (500.00, TRUE, 'LUXO');
+INSERT INTO tb_quarto (valor_diaria, disponivel, tipo) VALUES (400.00, FALSE, 'LUXO');  -- ocupado
 
 -- Inserção de reservas
 -- Reserva anterior (Cliente Teste)
