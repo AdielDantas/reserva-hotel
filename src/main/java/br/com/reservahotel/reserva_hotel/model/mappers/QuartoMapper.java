@@ -14,6 +14,7 @@ public interface QuartoMapper {
     @Mapping(target = "id", ignore = true)
     Quarto toEntity(QuartoDTO quarto);
 
+    @Mapping(target = "id", ignore = true)
     void updateEntityFromDto(QuartoDTO quartoDTO, @MappingTarget Quarto quarto);
 }
 
