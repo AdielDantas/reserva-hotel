@@ -23,9 +23,12 @@ public class ReservaController {
         return ResponseEntity.ok(reservaDTO);
     }
 
-    @GetMapping("/usuario/{usuarioId}")
-    public ResponseEntity<List<ReservaDTO>> buscarReservaPorIdDoUsuario(@PathVariable Long usuarioId) {
-        List<ReservaDTO> reservas = service.buscarReservaPorIdDoUsuario(usuarioId);
+    @GetMapping("/usuario")
+    public ResponseEntity<List<ReservaDTO>> buscarReservaPorIdDoUsuario(
+            @RequestParam(required = false) Long usuarioId,
+            @RequestParam(required = false) String email) {
+
+        List<ReservaDTO> reservas = service.buscarReservasPorUsuario(usuarioId, email);
         return ResponseEntity.ok(reservas);
     }
 

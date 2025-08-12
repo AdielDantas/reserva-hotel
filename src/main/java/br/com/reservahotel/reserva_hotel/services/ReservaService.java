@@ -11,9 +11,12 @@ import br.com.reservahotel.reserva_hotel.repositories.ReservaRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,8 +41,22 @@ public class ReservaService {
     }
 
     @Transactional(readOnly = true)
-    public List<ReservaDTO> buscarReservaPorIdDoUsuario(Long usuarioId) {
-        List<Reserva> reservas = repository.findByUsuarioId(usuarioId);
+    public List<ReservaDTO> buscarReservasPorUsuario(@Nullable Long usuarioId, @Nullable String email) {
+
+        List<Reserva> reservas;
+
+        if (usuarioId != null) {
+            reservas = repository.findByUsuarioId(usuarioId);
+        } else if (email != null) {
+            reservas = repository.findByUsuarioEmail(email);
+        } else {
+            throw new IllegalArgumentException("Informe o ID ou email do usuário.");
+        }
+
+        if (reservas.isEmpty()) {
+            throw new ResourceNotFoundException("Este usuário não tem reservas");
+        }
+
         return reservas.stream().map(reservaMapper::toDto).collect(Collectors.toList());
     }
 
