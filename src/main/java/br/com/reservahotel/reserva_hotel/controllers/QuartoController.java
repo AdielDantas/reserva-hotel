@@ -41,6 +41,12 @@ public class QuartoController {
         return ResponseEntity.ok(quartos);
     }
 
+    @GetMapping(value = "/tipo")
+    public ResponseEntity<List<QuartoDTO>> listarQuartoPorTipo(@RequestParam String tipo) {
+        List<QuartoDTO> quartos = service.listarQuartoPorTipo(tipo);
+        return ResponseEntity.ok(quartos);
+    }
+
     @PostMapping
     public ResponseEntity<QuartoDTO> criarQuarto(@RequestBody QuartoDTO novoQuartoDTO) {
         QuartoDTO quartoDTO = service.criarQuarto(novoQuartoDTO);

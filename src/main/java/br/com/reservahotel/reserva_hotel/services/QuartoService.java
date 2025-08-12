@@ -5,6 +5,7 @@ import br.com.reservahotel.reserva_hotel.exceptions.ResourceNotFoundException;
 import br.com.reservahotel.reserva_hotel.model.dto.QuartoDTO;
 import br.com.reservahotel.reserva_hotel.model.dto.QuartoMinDTO;
 import br.com.reservahotel.reserva_hotel.model.entities.Quarto;
+import br.com.reservahotel.reserva_hotel.model.enums.TipoQuarto;
 import br.com.reservahotel.reserva_hotel.model.mappers.QuartoMapper;
 import br.com.reservahotel.reserva_hotel.model.mappers.QuartoMinMapper;
 import br.com.reservahotel.reserva_hotel.repositories.QuartoRepository;
@@ -59,6 +60,18 @@ public class QuartoService {
 
         List<Quarto> quartos = repository.findByDisponivelTrue();
         return quartos.stream().map(quartoMapper::toDto).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<QuartoDTO> listarQuartoPorTipo(String tipoStr) {
+        try {
+            TipoQuarto tipo = TipoQuarto.valueOf(tipoStr.toUpperCase());
+            List<Quarto> quartos = repository.findByTipo(tipo);
+            return quartos.stream().map(quartoMapper::toDto).collect(Collectors.toList());
+        }
+        catch (IllegalArgumentException e) {
+            throw new ResourceNotFoundException("Tipo não localizado");
+        }
     }
 
     @Transactional
