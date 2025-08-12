@@ -4,11 +4,13 @@ import br.com.reservahotel.reserva_hotel.model.dto.QuartoDTO;
 import br.com.reservahotel.reserva_hotel.model.dto.QuartoMinDTO;
 import br.com.reservahotel.reserva_hotel.services.QuartoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -31,8 +33,11 @@ public class QuartoController {
     }
 
     @GetMapping(value = "/disponiveis")
-    public ResponseEntity<List<QuartoMinDTO>> listarQuartosDisponiveis() {
-        List<QuartoMinDTO> quartos = service.listarQuartosDisponiveis();
+    public ResponseEntity<List<QuartoDTO>> listarQuartosDisponiveis(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicial,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFinal) {
+
+        List<QuartoDTO> quartos = service.listarQuartosDisponiveis(dataInicial, dataFinal);
         return ResponseEntity.ok(quartos);
     }
 

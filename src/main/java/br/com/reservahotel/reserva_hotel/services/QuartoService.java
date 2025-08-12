@@ -10,11 +10,13 @@ import br.com.reservahotel.reserva_hotel.model.mappers.QuartoMinMapper;
 import br.com.reservahotel.reserva_hotel.repositories.QuartoRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,9 +46,19 @@ public class QuartoService {
     }
 
     @Transactional(readOnly = true)
-    public List<QuartoMinDTO> listarQuartosDisponiveis() {
+    public List<QuartoDTO> listarQuartosDisponiveis(LocalDate dataInicial, LocalDate dataFinal) {
+        if (dataInicial != null && dataFinal != null) {
+
+            if (dataInicial.isAfter(dataFinal)) {
+                throw new IllegalArgumentException("Data inicial não pode ser depois da data final");
+            }
+
+            List<Quarto> quartos = repository.findDisponiveisPorPeriodo(dataInicial, dataFinal);
+            return quartos.stream().map(quartoMapper::toDto).toList();
+        }
+
         List<Quarto> quartos = repository.findByDisponivelTrue();
-        return quartos.stream().map(quartoMinMapper::toDto).collect(Collectors.toList());
+        return quartos.stream().map(quartoMapper::toDto).toList();
     }
 
     @Transactional
