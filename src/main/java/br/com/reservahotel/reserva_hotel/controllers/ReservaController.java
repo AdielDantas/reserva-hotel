@@ -2,6 +2,7 @@ package br.com.reservahotel.reserva_hotel.controllers;
 
 import br.com.reservahotel.reserva_hotel.model.dto.ReservaDTO;
 import br.com.reservahotel.reserva_hotel.services.ReservaService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +34,7 @@ public class ReservaController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservaDTO> criarReserva(@RequestBody ReservaDTO reservaDTO) {
+    public ResponseEntity<ReservaDTO> criarReserva(@Valid @RequestBody ReservaDTO reservaDTO) {
         ReservaDTO reservaCriada = service.criarReserva(reservaDTO);
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()
@@ -44,7 +45,7 @@ public class ReservaController {
     }
 
     @PutMapping(value = "/id/{id}")
-    public ResponseEntity<ReservaDTO> atualizarReserva(@PathVariable Long id, @RequestBody ReservaDTO reservaDTO) {
+    public ResponseEntity<ReservaDTO> atualizarReserva(@PathVariable Long id, @Valid @RequestBody ReservaDTO reservaDTO) {
         ReservaDTO reservaAtualizada = service.atualizarReserva(id, reservaDTO);
         return ResponseEntity.ok(reservaAtualizada);
     }

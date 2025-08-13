@@ -96,7 +96,7 @@ public class QuartoService {
     @Transactional(propagation = Propagation.SUPPORTS)
     public void deletarQuarto(Long id) {
         if (!repository.existsById(id)) {
-            throw new ResourceNotFoundException("Usuário não encontrado com o ID: " + id);
+            throw new ResourceNotFoundException("Quarto não encontrado com o ID: " + id);
         }
         try {
             repository.deleteById(id);

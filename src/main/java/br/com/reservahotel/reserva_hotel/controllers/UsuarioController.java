@@ -4,6 +4,7 @@ import br.com.reservahotel.reserva_hotel.model.dto.NovoUsuarioDTO;
 import br.com.reservahotel.reserva_hotel.model.dto.UsuarioDTO;
 import br.com.reservahotel.reserva_hotel.model.dto.UsuarioMinDTO;
 import br.com.reservahotel.reserva_hotel.services.UsuarioService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -39,7 +40,7 @@ public class UsuarioController {
     }
 
     @PostMapping
-    public ResponseEntity<UsuarioDTO> salvarNovoUsuario(@RequestBody NovoUsuarioDTO novoUsuarioDTO) {
+    public ResponseEntity<UsuarioDTO> salvarNovoUsuario(@Valid @RequestBody NovoUsuarioDTO novoUsuarioDTO) {
         UsuarioDTO usuarioDTO = service.salvarNovoUsuario(novoUsuarioDTO);
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()
@@ -50,7 +51,7 @@ public class UsuarioController {
     }
 
     @PutMapping(value = "/id/{id}")
-    public ResponseEntity<UsuarioDTO> atualizarUsuario(@PathVariable Long id, @RequestBody NovoUsuarioDTO novoUsuarioDTO) {
+    public ResponseEntity<UsuarioDTO> atualizarUsuario(@PathVariable Long id, @Valid @RequestBody NovoUsuarioDTO novoUsuarioDTO) {
         UsuarioDTO usuarioDTO = service.atualizarUsuarioPorId(id, novoUsuarioDTO);
         return ResponseEntity.ok(usuarioDTO);
     }

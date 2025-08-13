@@ -3,6 +3,7 @@ package br.com.reservahotel.reserva_hotel.controllers;
 import br.com.reservahotel.reserva_hotel.model.dto.QuartoDTO;
 import br.com.reservahotel.reserva_hotel.model.dto.QuartoMinDTO;
 import br.com.reservahotel.reserva_hotel.services.QuartoService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -48,7 +49,7 @@ public class QuartoController {
     }
 
     @PostMapping
-    public ResponseEntity<QuartoDTO> criarQuarto(@RequestBody QuartoDTO novoQuartoDTO) {
+    public ResponseEntity<QuartoDTO> criarQuarto(@Valid @RequestBody QuartoDTO novoQuartoDTO) {
         QuartoDTO quartoDTO = service.criarQuarto(novoQuartoDTO);
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()
@@ -59,7 +60,7 @@ public class QuartoController {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<QuartoDTO> atualizarQuarto(@PathVariable Long id, @RequestBody QuartoDTO quartoAtualizado) {
+    public ResponseEntity<QuartoDTO> atualizarQuarto(@PathVariable Long id, @Valid @RequestBody QuartoDTO quartoAtualizado) {
         QuartoDTO quartoDTO = service.atualizarQuarto(id, quartoAtualizado);
         return ResponseEntity.ok(quartoDTO);
     }

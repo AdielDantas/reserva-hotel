@@ -2,16 +2,16 @@ package br.com.reservahotel.reserva_hotel.exceptions;
 
 public class MensagemDeCampo {
 
-    private String nomeDoCampo;
+    private String campo;
     private String mensagem;
 
-    public MensagemDeCampo(String nomeDoCampo, String mensagem) {
-        this.nomeDoCampo = nomeDoCampo;
+    public MensagemDeCampo(String campo, String mensagem) {
+        this.campo = campo;
         this.mensagem = mensagem;
     }
 
-    public String getNomeDoCampo() {
-        return nomeDoCampo;
+    public String getCampo() {
+        return campo;
     }
 
     public String getMensagem() {
