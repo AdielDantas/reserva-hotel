@@ -15,6 +15,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.OAuth2Token;
@@ -95,15 +96,15 @@ public class AuthorizationServerConfig {
 	public RegisteredClientRepository registeredClientRepository() {
 		// @formatter:off
 		RegisteredClient registeredClient = RegisteredClient
-			.withId(UUID.randomUUID().toString())
-			.clientId(clientId)
-			.clientSecret(passwordEncoder.encode(clientSecret))
-			.scope("read")
-			.scope("write")
-			.authorizationGrantType(new AuthorizationGrantType("password"))
-			.tokenSettings(tokenSettings())
-			.clientSettings(clientSettings())
-			.build();
+				.withId(UUID.randomUUID().toString())
+				.clientId(clientId)
+				.clientSecret(passwordEncoder.encode(clientSecret))
+				.scope("read")
+				.scope("write")
+				.authorizationGrantType(new AuthorizationGrantType("password"))
+				.tokenSettings(tokenSettings())
+				.clientSettings(clientSettings())
+				.build();
 		// @formatter:on
 
 		return new InMemoryRegisteredClientRepository(registeredClient);
@@ -113,9 +114,9 @@ public class AuthorizationServerConfig {
 	public TokenSettings tokenSettings() {
 		// @formatter:off
 		return TokenSettings.builder()
-			.accessTokenFormat(OAuth2TokenFormat.SELF_CONTAINED)
-			.accessTokenTimeToLive(Duration.ofSeconds(jwtDurationSeconds))
-			.build();
+				.accessTokenFormat(OAuth2TokenFormat.SELF_CONTAINED)
+				.accessTokenTimeToLive(Duration.ofSeconds(jwtDurationSeconds))
+				.build();
 		// @formatter:on
 	}
 
@@ -147,8 +148,8 @@ public class AuthorizationServerConfig {
 			if (context.getTokenType().getValue().equals("access_token")) {
 				// @formatter:off
 				context.getClaims()
-					.claim("authorities", authorities)
-					.claim("username", user.getUsername());
+						.claim("authorities", authorities)
+						.claim("username", user.getUsername());
 				// @formatter:on
 			}
 		};
