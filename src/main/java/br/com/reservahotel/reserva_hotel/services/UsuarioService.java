@@ -5,22 +5,29 @@ import br.com.reservahotel.reserva_hotel.exceptions.ResourceNotFoundException;
 import br.com.reservahotel.reserva_hotel.model.dto.NovoUsuarioDTO;
 import br.com.reservahotel.reserva_hotel.model.dto.UsuarioDTO;
 import br.com.reservahotel.reserva_hotel.model.dto.UsuarioMinDTO;
+import br.com.reservahotel.reserva_hotel.model.entities.Role;
 import br.com.reservahotel.reserva_hotel.model.entities.Usuario;
 import br.com.reservahotel.reserva_hotel.model.mappers.NovoUsuarioMapper;
 import br.com.reservahotel.reserva_hotel.model.mappers.UsuarioMapper;
 import br.com.reservahotel.reserva_hotel.model.mappers.UsuarioMinMapper;
+import br.com.reservahotel.reserva_hotel.projections.UserDetailsProjection;
 import br.com.reservahotel.reserva_hotel.repositories.UsuarioRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
-public class UsuarioService {
+public class UsuarioService implements UserDetailsService {
 
     @Autowired
     private UsuarioRepository repository;
@@ -85,5 +92,28 @@ public class UsuarioService {
         catch (DataIntegrityViolationException e) {
             throw new DataBaseException("Falha de integridade referencial");
         }
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+
+        List<UserDetailsProjection> result = repository.searchUserAndRolesByEmail(username);
+
+        if (result.isEmpty()) {
+            throw new UsernameNotFoundException("Email não localizado: " + username);
+        }
+
+        Usuario usuario = new Usuario();
+        usuario.setEmail(result.get(0).getUsername());
+        usuario.setSenha(result.get(0).getPassword());
+
+        for (UserDetailsProjection projection : result) {
+            usuario.addPerfil(new Role(
+                    projection.getRoleId(),
+                    projection.getAuthority()
+            ));
+        }
+
+        return usuario;
     }
 }
