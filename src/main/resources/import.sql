@@ -1,9 +1,18 @@
 -- Inserção de usuários
-INSERT INTO tb_usuario (nome, email, senha, perfil) VALUES ('Admin Teste', 'admin@email.com', '$2a$10$N7SkKCa3r17ga.i.dF9iy.BFUBL2n3b6Z1CWSZWi/qy7ABq/E6VpO', 'ADMIN');
-INSERT INTO tb_usuario (nome, email, senha, perfil) VALUES ('Joaquina Oliveira', 'cliente@email.com', '$2a$10$N7SkKCa3r17ga.i.dF9iy.BFUBL2n3b6Z1CWSZWi/qy7ABq/E6VpO', 'CLIENTE');
-INSERT INTO tb_usuario (nome, email, senha, perfil) VALUES ('João Silva', 'joao@email.com', '$2a$10$N7SkKCa3r17ga.i.dF9iy.BFUBL2n3b6Z1CWSZWi/qy7ABq/E6VpO', 'CLIENTE');
-INSERT INTO tb_usuario (nome, email, senha, perfil) VALUES ('Maria Souza', 'maria@email.com', '$2a$10$N7SkKCa3r17ga.i.dF9iy.BFUBL2n3b6Z1CWSZWi/qy7ABq/E6VpO', 'CLIENTE');
-INSERT INTO tb_usuario (nome, email, senha, perfil) VALUES ('Carlos Lima', 'carlos@email.com', '$2a$10$N7SkKCa3r17ga.i.dF9iy.BFUBL2n3b6Z1CWSZWi/qy7ABq/E6VpO', 'CLIENTE');
+INSERT INTO tb_usuario (nome, email, senha) VALUES ('Admin Teste', 'admin@gmail.com', '$2a$10$N7SkKCa3r17ga.i.dF9iy.BFUBL2n3b6Z1CWSZWi/qy7ABq/E6VpO');
+INSERT INTO tb_usuario (nome, email, senha) VALUES ('Joaquina Oliveira', 'Joaquinae@gmail.com', '$2a$10$N7SkKCa3r17ga.i.dF9iy.BFUBL2n3b6Z1CWSZWi/qy7ABq/E6VpO');
+INSERT INTO tb_usuario (nome, email, senha) VALUES ('João Silva', 'joao@gmail.com', '$2a$10$N7SkKCa3r17ga.i.dF9iy.BFUBL2n3b6Z1CWSZWi/qy7ABq/E6VpO');
+INSERT INTO tb_usuario (nome, email, senha) VALUES ('Maria Souza', 'maria@gmail.com', '$2a$10$N7SkKCa3r17ga.i.dF9iy.BFUBL2n3b6Z1CWSZWi/qy7ABq/E6VpO');
+INSERT INTO tb_usuario (nome, email, senha) VALUES ('Carlos Lima', 'carlos@gmail.com', '$2a$10$N7SkKCa3r17ga.i.dF9iy.BFUBL2n3b6Z1CWSZWi/qy7ABq/E6VpO');
+
+INSERT INTO tb_role(authority) VALUES ('ROLE_ADMIN');
+INSERT INTO tb_role(authority) VALUES ('ROLE_CLIENTE');
+
+INSERT INTO tb_usuario_role(usuario_id, role_id) VALUES (1, 1);
+INSERT INTO tb_usuario_role(usuario_id, role_id) VALUES (2, 2);
+INSERT INTO tb_usuario_role(usuario_id, role_id) VALUES (3, 2);
+INSERT INTO tb_usuario_role(usuario_id, role_id) VALUES (4, 2);
+INSERT INTO tb_usuario_role(usuario_id, role_id) VALUES (5, 2);
 
 -- Inserção de quartos
 INSERT INTO tb_quarto (valor_diaria, disponivel, tipo) VALUES (350.00, FALSE, 'LUXO');     -- ocupado

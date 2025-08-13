@@ -1,6 +1,6 @@
 package br.com.reservahotel.reserva_hotel.model.dto;
 
-import br.com.reservahotel.reserva_hotel.model.enums.Perfil;
+import br.com.reservahotel.reserva_hotel.model.entities.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -29,7 +29,7 @@ public class UsuarioDTO {
     private String email;
 
     @NotNull(message = "O perfil é obrigatório.")
-    private Perfil perfil;
+    private Role role;
 
     private List<ReservaDTO> reservas = new ArrayList<>();
 }

@@ -1,11 +1,12 @@
 package br.com.reservahotel.reserva_hotel.model.entities;
 
-import br.com.reservahotel.reserva_hotel.model.enums.Perfil;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "tb_usuario")
@@ -27,9 +28,25 @@ public class Usuario {
     @Column(nullable = false)
     private String senha;
 
-    @Enumerated(EnumType.STRING)
-    private Perfil perfil;
+    @ManyToMany
+    @JoinTable(name = "tb_usuario_role",
+            joinColumns = @JoinColumn(name = "usuario_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Role> roles = new HashSet<>();
 
     @OneToMany(mappedBy = "usuario")
     private List<Reserva> reservas = new ArrayList<>();
+
+    public void addPerfil(Role role) {
+        roles.add(role);
+    }
+
+    public boolean temPerfil(String nomePerfil) {
+        for (Role role : roles) {
+            if (role.getAuthority().equals(nomePerfil)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
