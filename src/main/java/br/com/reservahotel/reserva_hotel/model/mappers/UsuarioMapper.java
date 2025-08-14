@@ -9,7 +9,7 @@ import org.mapstruct.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Mapper(componentModel = "spring", uses = {ReservaMapper.class, UsuarioMinMapper.class})
+@Mapper(componentModel = "spring", uses = {ReservaMapper.class, UsuarioMinMapper.class, RoleMapper.class})
 public interface UsuarioMapper {
 
     @Mapping(target = "reservas", source = "reservas")

@@ -36,11 +36,11 @@ public class Usuario implements UserDetails {
     @OneToMany(mappedBy = "usuario")
     private List<Reserva> reservas = new ArrayList<>();
 
-    public void addPerfil(Role role) {
+    public void addRole(Role role) {
         roles.add(role);
     }
 
-    public boolean temPerfil(String nomePerfil) {
+    public boolean hasRole(String nomePerfil) {
         for (Role role : roles) {
             if (role.getAuthority().equals(nomePerfil)) {
                 return true;

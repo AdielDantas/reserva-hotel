@@ -1,6 +1,6 @@
 -- Inserção de usuários
 INSERT INTO tb_usuario (nome, email, senha) VALUES ('Admin Teste', 'admin@gmail.com', '$2a$10$N7SkKCa3r17ga.i.dF9iy.BFUBL2n3b6Z1CWSZWi/qy7ABq/E6VpO');
-INSERT INTO tb_usuario (nome, email, senha) VALUES ('Joaquina Oliveira', 'Joaquinae@gmail.com', '$2a$10$N7SkKCa3r17ga.i.dF9iy.BFUBL2n3b6Z1CWSZWi/qy7ABq/E6VpO');
+INSERT INTO tb_usuario (nome, email, senha) VALUES ('Cliente Teste', 'cliente@gmail.com', '$2a$10$N7SkKCa3r17ga.i.dF9iy.BFUBL2n3b6Z1CWSZWi/qy7ABq/E6VpO');
 INSERT INTO tb_usuario (nome, email, senha) VALUES ('João Silva', 'joao@gmail.com', '$2a$10$N7SkKCa3r17ga.i.dF9iy.BFUBL2n3b6Z1CWSZWi/qy7ABq/E6VpO');
 INSERT INTO tb_usuario (nome, email, senha) VALUES ('Maria Souza', 'maria@gmail.com', '$2a$10$N7SkKCa3r17ga.i.dF9iy.BFUBL2n3b6Z1CWSZWi/qy7ABq/E6VpO');
 INSERT INTO tb_usuario (nome, email, senha) VALUES ('Carlos Lima', 'carlos@gmail.com', '$2a$10$N7SkKCa3r17ga.i.dF9iy.BFUBL2n3b6Z1CWSZWi/qy7ABq/E6VpO');

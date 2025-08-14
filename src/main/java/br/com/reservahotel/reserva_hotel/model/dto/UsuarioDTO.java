@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -27,9 +28,6 @@ public class UsuarioDTO {
     @Email(message = "O e-mail informado é inválido.")
     @Size(max = 100, message = "O e-mail não pode ter mais que 100 caracteres.")
     private String email;
-
-    @NotNull(message = "O perfil é obrigatório.")
-    private Role role;
 
     private List<ReservaDTO> reservas = new ArrayList<>();
 }

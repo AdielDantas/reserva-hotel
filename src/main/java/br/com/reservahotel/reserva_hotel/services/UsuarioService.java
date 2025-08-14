@@ -11,6 +11,7 @@ import br.com.reservahotel.reserva_hotel.model.mappers.NovoUsuarioMapper;
 import br.com.reservahotel.reserva_hotel.model.mappers.UsuarioMapper;
 import br.com.reservahotel.reserva_hotel.model.mappers.UsuarioMinMapper;
 import br.com.reservahotel.reserva_hotel.projections.UserDetailsProjection;
+import br.com.reservahotel.reserva_hotel.repositories.RoleRepository;
 import br.com.reservahotel.reserva_hotel.repositories.UsuarioRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,9 @@ public class UsuarioService implements UserDetailsService {
 
     @Autowired
     private NovoUsuarioMapper novoUsuarioMapper;
+
+    @Autowired
+    private RoleRepository roleRepository;
 
     @Transactional(readOnly = true)
     public UsuarioDTO buscarUsuarioPorIdComReservas(Long id) {
@@ -108,7 +112,7 @@ public class UsuarioService implements UserDetailsService {
         usuario.setSenha(result.get(0).getPassword());
 
         for (UserDetailsProjection projection : result) {
-            usuario.addPerfil(new Role(
+            usuario.addRole(new Role(
                     projection.getRoleId(),
                     projection.getAuthority()
             ));
