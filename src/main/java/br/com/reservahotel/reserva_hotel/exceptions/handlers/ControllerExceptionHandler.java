@@ -95,4 +95,17 @@ public class ControllerExceptionHandler {
 
         return ResponseEntity.status(status).body(erro);
     }
+
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<RespostaErroApi> forbidden(ForbiddenException e, HttpServletRequest request) {
+
+        HttpStatus status = HttpStatus.FORBIDDEN;
+        RespostaErroApi erro = new RespostaErroApi(
+                Instant.now(),
+                status.value(),
+                e.getMessage(),
+                request.getRequestURI());
+
+        return ResponseEntity.status(status).body(erro);
+    }
 }

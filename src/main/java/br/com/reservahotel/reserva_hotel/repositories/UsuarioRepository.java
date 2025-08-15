@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
-    Optional<Usuario> findByEmail(String email);
+    Optional<Usuario> findByEmailIgnoreCase(String email);
 
     @Query("SELECT u FROM Usuario u LEFT JOIN FETCH u.reservas WHERE u.id = :id")
     Optional<Usuario> buscarUsuarioPorIdComReservas(@Param("id") Long id);

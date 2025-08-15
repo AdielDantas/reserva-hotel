@@ -40,9 +40,9 @@ public class Usuario implements UserDetails {
         roles.add(role);
     }
 
-    public boolean hasRole(String nomePerfil) {
+    public boolean hasRole(String roleName) {
         for (Role role : roles) {
-            if (role.getAuthority().equals(nomePerfil)) {
+            if (role.getAuthority().equals(roleName)) {
                 return true;
             }
         }

@@ -1,6 +1,7 @@
 package br.com.reservahotel.reserva_hotel.model.dto;
 
 import br.com.reservahotel.reserva_hotel.model.entities.Role;
+import br.com.reservahotel.reserva_hotel.model.entities.Usuario;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -8,6 +9,7 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,5 +31,16 @@ public class UsuarioDTO {
     @Size(max = 100, message = "O e-mail não pode ter mais que 100 caracteres.")
     private String email;
 
+    private List<String> roles = new ArrayList<>();
+
     private List<ReservaDTO> reservas = new ArrayList<>();
+
+    public UsuarioDTO(Usuario entity) {
+        this.id = entity.getId();
+        this.nome = entity.getNome();
+        this.email = entity.getEmail();
+        for (GrantedAuthority role : entity.getRoles()) {
+            roles.add(role.getAuthority());
+        }
+    }
 }

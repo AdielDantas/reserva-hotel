@@ -5,9 +5,11 @@ import br.com.reservahotel.reserva_hotel.exceptions.ResourceNotFoundException;
 import br.com.reservahotel.reserva_hotel.model.dto.ReservaDTO;
 import br.com.reservahotel.reserva_hotel.model.entities.Quarto;
 import br.com.reservahotel.reserva_hotel.model.entities.Reserva;
+import br.com.reservahotel.reserva_hotel.model.entities.Usuario;
 import br.com.reservahotel.reserva_hotel.model.mappers.ReservaMapper;
 import br.com.reservahotel.reserva_hotel.repositories.QuartoRepository;
 import br.com.reservahotel.reserva_hotel.repositories.ReservaRepository;
+import br.com.reservahotel.reserva_hotel.repositories.UsuarioRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -31,28 +33,29 @@ public class ReservaService {
     private ReservaMapper reservaMapper;
 
     @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    @Autowired
     private QuartoRepository quartoRepository;
+
+    @Autowired
+    private AuthService authService;
 
     @Transactional(readOnly = true)
     public ReservaDTO buscarReservaPorId(Long id) {
         Reserva reserva = repository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("Reserva não encontrada com o ID: " + id));
+        authService.validarProprioUsuarioOuAdmin(reserva.getUsuario().getId());
         return reservaMapper.toDto(reserva);
     }
 
     @Transactional(readOnly = true)
     public List<ReservaDTO> buscarReservasPorUsuario(@Nullable Long usuarioId, @Nullable String email) {
 
-        List<Reserva> reservas;
+        Long alvoId = authService.resolveUsuarioId(usuarioId, email);
+        authService.validarProprioUsuarioOuAdmin(alvoId);
 
-        if (usuarioId != null) {
-            reservas = repository.findByUsuarioId(usuarioId);
-        } else if (email != null) {
-            reservas = repository.findByUsuarioEmail(email);
-        } else {
-            throw new IllegalArgumentException("Informe o ID ou email do usuário.");
-        }
-
+        List<Reserva> reservas = repository.findByUsuarioId(alvoId);
         if (reservas.isEmpty()) {
             throw new ResourceNotFoundException("Este usuário não tem reservas");
         }
@@ -77,6 +80,8 @@ public class ReservaService {
 
     @Transactional
     public ReservaDTO atualizarReserva(Long id, ReservaDTO reservaDTO) {
+
+        authService.validarProprioUsuarioOuAdmin(id);
 
         try {
 
@@ -111,6 +116,9 @@ public class ReservaService {
 
     @Transactional(propagation = Propagation.SUPPORTS)
     public void deletarReservaPorId(Long id) {
+
+        authService.validarProprioUsuarioOuAdmin(id);
+
         if (!repository.existsById(id)) {
             throw new ResourceNotFoundException("Reserva não encontrado com o ID: " + id);
         }

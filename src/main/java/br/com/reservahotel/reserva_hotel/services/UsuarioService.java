@@ -13,6 +13,7 @@ import br.com.reservahotel.reserva_hotel.model.mappers.UsuarioMinMapper;
 import br.com.reservahotel.reserva_hotel.projections.UserDetailsProjection;
 import br.com.reservahotel.reserva_hotel.repositories.RoleRepository;
 import br.com.reservahotel.reserva_hotel.repositories.UsuarioRepository;
+import br.com.reservahotel.reserva_hotel.util.CustomUsuario;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -45,17 +46,25 @@ public class UsuarioService implements UserDetailsService {
     @Autowired
     private RoleRepository roleRepository;
 
+    @Autowired
+    private CustomUsuario customUsuario;
+
+    @Autowired
+    private AuthService authService;
+
     @Transactional(readOnly = true)
     public UsuarioDTO buscarUsuarioPorIdComReservas(Long id) {
         Usuario usuario = repository.buscarUsuarioPorIdComReservas(id).orElseThrow(
                 () -> new ResourceNotFoundException("Usuário não encontrado com o ID: " + id));
+        authService.validarProprioUsuarioOuAdmin(usuario.getId());
         return usuarioMapper.toDto(usuario);
     }
 
     @Transactional(readOnly = true)
     public UsuarioDTO buscarUsuarioPorEmailComReservas(String email) {
-        Usuario usuario = repository.findByEmail(email).orElseThrow(
+        Usuario usuario = repository.findByEmailIgnoreCase(email).orElseThrow(
                 () -> new ResourceNotFoundException("Usuário não encontrado com o Email: " + email));
+        authService.validarProprioUsuarioOuAdmin(usuario.getId());
         return usuarioMapper.toDto(usuario);
     }
 
@@ -74,6 +83,9 @@ public class UsuarioService implements UserDetailsService {
 
     @Transactional
     public UsuarioDTO atualizarUsuarioPorId(Long id, NovoUsuarioDTO novoUsuarioDTO) {
+
+        authService.validarProprioUsuarioOuAdmin(id);
+
         try {
             Usuario usuario = repository.getReferenceById(id);
             novoUsuarioMapper.updateEntityFromDto(novoUsuarioDTO, usuario);
@@ -87,6 +99,9 @@ public class UsuarioService implements UserDetailsService {
 
     @Transactional(propagation = Propagation.SUPPORTS)
     public void deletarUsuarioPorId(Long id) {
+
+        authService.validarProprioUsuarioOuAdmin(id);
+
         if (!repository.existsById(id)) {
             throw new ResourceNotFoundException("Usuário não encontrado com o ID: " + id);
         }
@@ -119,5 +134,22 @@ public class UsuarioService implements UserDetailsService {
         }
 
         return usuario;
+    }
+
+    protected Usuario usuarioLogado() {
+
+        try {
+            String username = customUsuario.usernameDoUsuarioLogado();
+            return repository.findByEmailIgnoreCase(username).get();
+        }
+        catch (Exception e) {
+            throw new UsernameNotFoundException("Email não localizado");
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public UsuarioDTO obterMeusDados() {
+        Usuario usuario = usuarioLogado();
+        return usuarioMapper.toDto(usuario);
     }
 }

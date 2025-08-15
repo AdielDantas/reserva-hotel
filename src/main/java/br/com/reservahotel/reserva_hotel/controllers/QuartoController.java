@@ -4,9 +4,12 @@ import br.com.reservahotel.reserva_hotel.model.dto.QuartoDTO;
 import br.com.reservahotel.reserva_hotel.model.dto.QuartoMinDTO;
 import br.com.reservahotel.reserva_hotel.services.QuartoService;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -48,6 +51,7 @@ public class QuartoController {
         return ResponseEntity.ok(quartos);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping
     public ResponseEntity<QuartoDTO> criarQuarto(@Valid @RequestBody QuartoDTO novoQuartoDTO) {
         QuartoDTO quartoDTO = service.criarQuarto(novoQuartoDTO);
@@ -59,12 +63,14 @@ public class QuartoController {
         return ResponseEntity.created(uri).body(quartoDTO);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping(value = "/{id}")
     public ResponseEntity<QuartoDTO> atualizarQuarto(@PathVariable Long id, @Valid @RequestBody QuartoDTO quartoAtualizado) {
         QuartoDTO quartoDTO = service.atualizarQuarto(id, quartoAtualizado);
         return ResponseEntity.ok(quartoDTO);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> deletarQuarto(@PathVariable Long id) {
         service.deletarQuarto(id);
