@@ -65,7 +65,7 @@ public class UsuarioController {
         log.info("Recebida requisição GET /usuarios - Página: {}, Tamanho: {}",
                 pageable.getPageNumber(), pageable.getPageSize());
 
-        Page<UsuarioMinDTO> page = service.buscarTodosUsuarosPaginados(pageable);
+        Page<UsuarioMinDTO> page = service.buscarTodosUsuariosPaginados(pageable);
 
         log.info("Requisição GET /usuarios concluída com sucesso - Total elementos: {}", page.getTotalElements());
         return ResponseEntity.ok().body(page);

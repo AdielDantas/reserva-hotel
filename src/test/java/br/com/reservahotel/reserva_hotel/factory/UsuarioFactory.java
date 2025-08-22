@@ -1,5 +1,8 @@
 package br.com.reservahotel.reserva_hotel.factory;
 
+import br.com.reservahotel.reserva_hotel.model.dto.NovoUsuarioDTO;
+import br.com.reservahotel.reserva_hotel.model.dto.UsuarioDTO;
+import br.com.reservahotel.reserva_hotel.model.dto.UsuarioMinDTO;
 import br.com.reservahotel.reserva_hotel.model.entities.Role;
 import br.com.reservahotel.reserva_hotel.model.entities.Usuario;
 
@@ -15,5 +18,23 @@ public class UsuarioFactory {
         Usuario usuario = new Usuario(2L, "Usuario Cliente Teste", "usuariocliente@gmail.com", "$2a$10$N7SkKCa3r17ga.i.dF9iy.BFUBL2n3b6Z1CWSZWi/qy7ABq/E6VpO");
         usuario.addRole(new Role(1L, "ROLE_CLIENTE"));
         return usuario;
+    }
+
+    public static UsuarioDTO criarUsuarioAdminDTO() {
+        Usuario usuario = criarUsuarioAdmin();
+        return new UsuarioDTO(usuario);
+    }
+
+    public static UsuarioDTO criarUsuarioClienteDTO() {
+        Usuario usuario = criarUsuarioCliente();
+        return new UsuarioDTO(usuario);
+    }
+
+    public static UsuarioMinDTO criarUsuarioMinDTO() {
+        return new UsuarioMinDTO(2L, "Usuario Cliente Teste", "usuariocliente@gmail.com");
+    }
+
+    public static NovoUsuarioDTO novoUsuarioDTO() {
+        return new NovoUsuarioDTO(2L, "Novo Usuario Cliente Teste", "novousuariocliente@gmail.com", "$2a$10$N7SkKCa3r17ga.i.dF9iy.BFUBL2n3b6Z1CWSZWi/qy7ABq/E6VpO");
     }
 }

@@ -90,7 +90,7 @@ public class UsuarioService implements UserDetailsService {
     }
 
     @Transactional(readOnly = true)
-    public Page<UsuarioMinDTO> buscarTodosUsuarosPaginados(Pageable pageable) {
+    public Page<UsuarioMinDTO> buscarTodosUsuariosPaginados(Pageable pageable) {
 
         log.debug("Buscando usuários paginados - Pagina: {}, Tamanho: {}",
                 pageable.getPageNumber(),
@@ -199,14 +199,9 @@ public class UsuarioService implements UserDetailsService {
     }
 
     protected Usuario usuarioLogado() {
-
-        try {
-            String username = customUsuario.usernameDoUsuarioLogado();
-            return repository.findByEmailIgnoreCase(username).get();
-        }
-        catch (Exception e) {
-            throw new UsernameNotFoundException("Email não localizado");
-        }
+        String username = customUsuario.usernameDoUsuarioLogado();
+        return repository.findByEmailIgnoreCase(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Email não localizado: " + username));
     }
 
     @Transactional(readOnly = true)
