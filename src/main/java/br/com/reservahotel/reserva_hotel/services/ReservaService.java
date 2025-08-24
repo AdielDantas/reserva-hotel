@@ -30,8 +30,6 @@ import java.util.stream.Collectors;
 @Service
 public class ReservaService {
 
-    private static final Logger logger = LoggerFactory.getLogger(ReservaService.class);
-
     @Autowired
     private ReservaRepository repository;
 
@@ -50,16 +48,16 @@ public class ReservaService {
     @Transactional(readOnly = true)
     public ReservaDTO buscarReservaPorId(Long id) {
 
-        logger.debug("Buscando reserva de ID: {}", id);
+        log.debug("Buscando reserva de ID: {}", id);
 
         Reserva reserva = repository.findById(id).orElseThrow(
                 () -> {
-                    logger.error("Rserva não encontrada com ID: {}", id);
+                    log.error("Rserva não encontrada com ID: {}", id);
                     return new ResourceNotFoundException("Reserva não encontrada com o ID: " + id);
                 });
 
         authService.validarProprioUsuarioOuAdmin(reserva.getUsuario().getId());
-        logger.info("Usuário validado: {}", reserva.getUsuario().getEmail());
+        log.info("Usuário validado: {}", reserva.getUsuario().getEmail());
 
         return reservaMapper.toDto(reserva);
     }
@@ -67,19 +65,19 @@ public class ReservaService {
     @Transactional(readOnly = true)
     public List<ReservaDTO> buscarReservasPorUsuario(@Nullable Long usuarioId, @Nullable String email) {
 
-        logger.info("Iniciando busca de reserva do usuário id: {}, Email: {}",usuarioId, email);
+        log.info("Iniciando busca de reserva do usuário id: {}, Email: {}",usuarioId, email);
 
-        logger.debug("Resolvendo ID do usuário: ID {}, Email {}", usuarioId, email);
+        log.debug("Resolvendo ID do usuário: ID {}, Email {}", usuarioId, email);
         Long alvoId = authService.resolveUsuarioId(usuarioId, email);
-        logger.debug("Id do usuário resolvido: {}", alvoId);
+        log.debug("Id do usuário resolvido: {}", alvoId);
 
-        logger.debug("Validando permissões do usuário ID: {}", alvoId);
+        log.debug("Validando permissões do usuário ID: {}", alvoId);
         authService.validarProprioUsuarioOuAdmin(alvoId);
 
         List<Reserva> reservas = repository.findByUsuarioId(alvoId);
         if (reservas.isEmpty()) {
 
-            logger.warn("Nenhuma reserva encontrada para o usuário ID: {}", alvoId);
+            log.warn("Nenhuma reserva encontrada para o usuário ID: {}", alvoId);
             throw new ResourceNotFoundException("Este usuário não tem reservas");
         }
 
@@ -89,12 +87,12 @@ public class ReservaService {
     @Transactional
     public ReservaDTO criarReserva(ReservaDTO reservaDTO) {
 
-        logger.info("Iniciando criação de reserva no quart9o ID: {}, pelo usuário ID: {}",
+        log.info("Iniciando criação de reserva no quart9o ID: {}, pelo usuário ID: {}",
                 reservaDTO.getQuarto().getId(), reservaDTO.getUsuario().getId());
 
         Quarto quarto = quartoRepository.findById(reservaDTO.getQuarto().getId())
                 .orElseThrow(() -> {
-                    logger.error("Quarto não encontrado com o ID: {}", reservaDTO.getQuarto().getId());
+                    log.error("Quarto não encontrado com o ID: {}", reservaDTO.getQuarto().getId());
                     return new ResourceNotFoundException("Quarto não encontrado");
                 });
 
