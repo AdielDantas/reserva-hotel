@@ -27,6 +27,14 @@ public class AuthService {
         }
     }
 
+    public void validarSomenteAdmin() {
+        Usuario usuario = usuarioLogado();
+
+        if (!usuario.hasRole("ROLE_ADMIN")) {
+            throw new ForbiddenException("Acesso negado. Apenas administradores podem executar essa ação.");
+        }
+    }
+
     public Long resolveUsuarioId(@Nullable Long usuarioId, @Nullable String email) {
         if (usuarioId != null) return usuarioId;
 

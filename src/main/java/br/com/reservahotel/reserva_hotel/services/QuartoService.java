@@ -33,7 +33,7 @@ public class QuartoService {
     QuartoMapper quartoMapper;
 
     @Autowired
-    QuartoMinMapper quartoMinMapper;
+    AuthService authService;
 
     @Transactional(readOnly = true)
     public QuartoDTO buscarQuartoPorId(Long id) {
@@ -43,7 +43,7 @@ public class QuartoService {
         Quarto quarto = repository.findById(id).orElseThrow(
                 () -> {
                     log.error("Quarto não encontrado com ID: {}", id);
-                    return new ResourceNotFoundException("Usuário não encontrado com o ID: " + id);
+                    return new ResourceNotFoundException("Quarto não encontrado com o ID: " + id);
                 });
 
         log.info("Quarto encontrado com ID: {}", quarto.getId());
@@ -105,6 +105,8 @@ public class QuartoService {
     @Transactional
     public QuartoDTO criarQuarto(QuartoDTO quartoDTO) {
 
+        authService.validarSomenteAdmin();
+
         log.info("Criando novo quarto do tipo: {}", quartoDTO.getTipo());
 
         Quarto quarto = quartoMapper.toEntity(quartoDTO);
@@ -116,6 +118,8 @@ public class QuartoService {
 
     @Transactional
     public QuartoDTO atualizarQuarto(Long id, QuartoDTO quartoDTO) {
+
+        authService.validarSomenteAdmin();
 
         log.info("Atualizando quarto ID: {}", id);
 
@@ -135,6 +139,8 @@ public class QuartoService {
 
     @Transactional(propagation = Propagation.SUPPORTS)
     public void deletarQuarto(Long id) {
+
+        authService.validarSomenteAdmin();
 
         log.info("Iniciando exclusão do quarto ID: {}", id);
 
