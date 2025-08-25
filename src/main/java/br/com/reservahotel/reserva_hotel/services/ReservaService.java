@@ -1,6 +1,7 @@
 package br.com.reservahotel.reserva_hotel.services;
 
 import br.com.reservahotel.reserva_hotel.exceptions.DataBaseException;
+import br.com.reservahotel.reserva_hotel.exceptions.ForbiddenException;
 import br.com.reservahotel.reserva_hotel.exceptions.ResourceNotFoundException;
 import br.com.reservahotel.reserva_hotel.model.dto.ReservaDTO;
 import br.com.reservahotel.reserva_hotel.model.entities.Quarto;
@@ -52,7 +53,7 @@ public class ReservaService {
 
         Reserva reserva = repository.findById(id).orElseThrow(
                 () -> {
-                    log.error("Rserva não encontrada com ID: {}", id);
+                    log.error("Reserva não encontrada com ID: {}", id);
                     return new ResourceNotFoundException("Reserva não encontrada com o ID: " + id);
                 });
 
@@ -113,37 +114,63 @@ public class ReservaService {
 
     @Transactional
     public ReservaDTO atualizarReserva(Long id, ReservaDTO reservaDTO) {
-
-        authService.validarProprioUsuarioOuAdmin(id);
+        log.info("Iniciando atualização da reserva com ID: {}", id);
 
         try {
+            // Busca a reserva existente
+            Reserva reservaExistente = repository.findById(id)
+                    .orElseThrow(() -> {
+                        log.error("Reserva não encontrada com ID: {}", id);
+                        return new ResourceNotFoundException("Reserva não encontrada com o ID: " + id);
+                    });
 
-            Reserva reservaExistente = repository.findById(reservaDTO.getQuarto().getId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Quarto não encontrado"));
+            // Validação de permissão do usuário
+            authService.validarProprioUsuarioOuAdmin(reservaExistente.getUsuario().getId());
+            log.debug("Validação de permissão concluída para o usuário ID: {}", reservaExistente.getUsuario().getId());
 
+            // Se o quarto da reserva mudou, verifica disponibilidade e atualiza
             if (!reservaExistente.getQuarto().getId().equals(reservaDTO.getQuarto().getId())) {
+                Quarto novoQuarto = quartoRepository.findById(reservaDTO.getQuarto().getId())
+                        .orElseThrow(() -> {
+                            log.error("Novo quarto não encontrado com ID: {}", reservaDTO.getQuarto().getId());
+                            return new ResourceNotFoundException("Quarto não encontrado com o ID: " + reservaDTO.getQuarto().getId());
+                        });
+
+                if (!novoQuarto.getDisponivel()) {
+                    log.warn("Tentativa de atualizar reserva para quarto indisponível - ID: {}", novoQuarto.getId());
+                    throw new IllegalStateException("O quarto selecionado não está disponível para reserva");
+                }
+
+                // Libera o quarto antigo
                 Quarto quartoAntigo = reservaExistente.getQuarto();
                 quartoAntigo.setDisponivel(true);
                 quartoRepository.save(quartoAntigo);
+
+                // Reserva o novo quarto
+                novoQuarto.setDisponivel(false);
+                quartoRepository.save(novoQuarto);
+
+                log.info("Alterando reserva do quarto {} para o quarto {}", quartoAntigo.getId(), novoQuarto.getId());
+                reservaExistente.setQuarto(novoQuarto);
             }
 
-            Quarto novoQuarto = quartoRepository.findById(reservaDTO.getQuarto().getId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Quarto não encontrado"));
-
-            if (!novoQuarto.getDisponivel()) {
-                throw new IllegalStateException("Este quarto já está reservado");
-            }
-
+            // Atualiza os dados da reserva
             reservaMapper.updateEntityFromDto(reservaDTO, reservaExistente);
-            Reserva reservaAtualizada = repository.save(reservaExistente);
 
-            novoQuarto.setDisponivel(false);
-            quartoRepository.save(novoQuarto);
+            // Salva e retorna a reserva atualizada
+            Reserva reservaAtualizada = repository.save(reservaExistente);
+            log.info("Reserva atualizada com sucesso - ID: {}", reservaAtualizada.getId());
 
             return reservaMapper.toDto(reservaAtualizada);
-        }
-        catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException("Reserva não encontrada com o ID: " + id);
+
+        } catch (ResourceNotFoundException | IllegalStateException | ForbiddenException e) {
+            log.warn("Erro de negócio ao atualizar reserva: {}", e.getMessage());
+
+            throw e;
+        } catch (Exception e) {
+
+            log.error("Erro inesperado ao atualizar reserva com ID: {}", id, e);
+            throw new RuntimeException("Erro inesperado ao atualizar reserva", e);
         }
     }
 

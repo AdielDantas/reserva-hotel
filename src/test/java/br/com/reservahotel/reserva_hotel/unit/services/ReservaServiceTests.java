@@ -81,6 +81,10 @@ public class ReservaServiceTests {
 
         when(repository.save(reserva)).thenReturn(reserva);
 
+        when(quartoRepository.findById(reservaDTO.getQuarto().getId())).thenReturn(Optional.of(quarto));
+
+        when(repository.findById(reservaDTO.getQuarto().getId())).thenReturn(Optional.of(reserva));
+
         when(repository.existsById(idExistente)).thenReturn(true);
         when(repository.existsById(idInexistente)).thenReturn(false);
         when(repository.existsById(idDependente)).thenReturn(true);
@@ -97,7 +101,7 @@ public class ReservaServiceTests {
     }
 
     @Test
-    void buscarReservaPorId_DeveRetornarReservaDTO_QuandoIdForExistente() {
+    void buscarReservaPorId_DeveRetornarReservaDTO_QuandoIdExistir() {
         ReservaDTO resultado = service.buscarReservaPorId(idExistente);
 
         assertThat(resultado).isNotNull();
@@ -111,7 +115,7 @@ public class ReservaServiceTests {
     }
 
     @Test
-    void buscarReservaPorId_DeveRetornarResourceNotFoundException_QuandoIdForExistente() {
+    void buscarReservaPorId_DeveRetornarResourceNotFoundException_QuandoIdNaoExistir() {
 
         assertThrows(ResourceNotFoundException.class, () -> {
             service.buscarReservaPorId(idInexistente);
@@ -183,13 +187,11 @@ public class ReservaServiceTests {
     @Test
     void criarReserva_DeveRetornarReservaDTO_QuandoQuartoDisponivel() {
 
-        when(quartoRepository.findById(reservaDTO.getQuarto().getId())).thenReturn(Optional.of(quarto));
-
         ReservaDTO resultado = service.criarReserva(reservaDTO);
 
         assertThat(resultado).isNotNull();
         assertThat(resultado).isEqualTo(reservaDTO);
-        assertThat(quarto.getDisponivel()).isFalse(); // Disponibilidade atualizada
+        assertThat(quarto.getDisponivel()).isFalse();
 
         verify(quartoRepository, times(1)).findById(reservaDTO.getQuarto().getId());
         verify(reservaMapper, times(1)).toEntity(reservaDTO);
@@ -213,9 +215,8 @@ public class ReservaServiceTests {
 
     @Test
     void criarReserva_DeveLancarIllegalStateException_QuandoQuartoNaoDisponivel() {
-        quarto.setDisponivel(false);
 
-        when(quartoRepository.findById(reservaDTO.getQuarto().getId())).thenReturn(Optional.of(quarto));
+        quarto.setDisponivel(false);
 
         assertThrows(IllegalStateException.class, () -> {
             service.criarReserva(reservaDTO);
@@ -230,52 +231,68 @@ public class ReservaServiceTests {
     @Test
     void atualizarReserva_DeveRetornarReservaDTO_QuandoAtualizacaoBemSucedida() {
 
-        when(repository.findById(reservaDTO.getQuarto().getId())).thenReturn(Optional.of(reserva));
-        when(quartoRepository.findById(reservaDTO.getQuarto().getId())).thenReturn(Optional.of(quarto));
+        Quarto novoQuarto = QuartoFactory.criarQuarto();
+        novoQuarto.setId(2L);
+        novoQuarto.setDisponivel(true);
+
+        when(repository.findById(idExistente)).thenReturn(Optional.of(reserva));
+        when(quartoRepository.findById(novoQuarto.getId())).thenReturn(Optional.of(novoQuarto));
         when(repository.save(reserva)).thenReturn(reserva);
+
+        // Alterando o DTO para simular troca de quarto
+        reservaDTO.getQuarto().setId(novoQuarto.getId());
 
         ReservaDTO resultado = service.atualizarReserva(idExistente, reservaDTO);
 
         assertThat(resultado).isEqualTo(reservaDTO);
-        assertThat(quarto.getDisponivel()).isFalse();
+        assertThat(reserva.getQuarto().getId()).isEqualTo(novoQuarto.getId());
+        assertThat(novoQuarto.getDisponivel()).isFalse();
+        assertThat(quarto.getDisponivel()).isTrue();
 
-        verify(authService, times(1)).validarProprioUsuarioOuAdmin(idExistente);
-        verify(repository, times(1)).findById(reservaDTO.getQuarto().getId());
+        verify(authService, times(1)).validarProprioUsuarioOuAdmin(reserva.getUsuario().getId());
+        verify(repository, times(1)).findById(idExistente);
         verify(reservaMapper, times(1)).updateEntityFromDto(reservaDTO, reserva);
         verify(repository, times(1)).save(reserva);
         verify(quartoRepository, times(1)).save(quarto);
+        verify(quartoRepository, times(1)).save(novoQuarto);
         verify(reservaMapper, times(1)).toDto(reserva);
     }
 
     @Test
     void atualizarReserva_DeveLancarResourceNotFoundException_QuandoReservaNaoExistir() {
 
-        when(repository.findById(reservaDTO.getQuarto().getId())).thenReturn(Optional.empty());
+        when(repository.findById(idInexistente)).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () -> {
             service.atualizarReserva(idInexistente, reservaDTO);
         });
 
-        verify(authService, times(1)).validarProprioUsuarioOuAdmin(idInexistente);
-        verify(repository, times(1)).findById(reservaDTO.getQuarto().getId());
+        // authService NÃO deve ser chamado
+        verify(repository, times(1)).findById(idInexistente);
+        verifyNoInteractions(authService);
         verifyNoInteractions(reservaMapper);
         verifyNoInteractions(quartoRepository);
     }
 
     @Test
     void atualizarReserva_DeveLancarIllegalStateException_QuandoNovoQuartoNaoDisponivel() {
-        quarto.setDisponivel(false);
 
-        when(repository.findById(reservaDTO.getQuarto().getId())).thenReturn(Optional.of(reserva));
-        when(quartoRepository.findById(reservaDTO.getQuarto().getId())).thenReturn(Optional.of(quarto));
+        Quarto novoQuarto = QuartoFactory.criarQuarto();
+        novoQuarto.setId(2L);
+        novoQuarto.setDisponivel(false);
+
+        when(repository.findById(idExistente)).thenReturn(Optional.of(reserva));
+        when(quartoRepository.findById(novoQuarto.getId())).thenReturn(Optional.of(novoQuarto));
+
+        reservaDTO.getQuarto().setId(novoQuarto.getId());
 
         assertThrows(IllegalStateException.class, () -> {
             service.atualizarReserva(idExistente, reservaDTO);
         });
 
-        verify(authService, times(1)).validarProprioUsuarioOuAdmin(idExistente);
-        verify(repository, times(1)).findById(reservaDTO.getQuarto().getId());
-        verify(quartoRepository, times(1)).findById(reservaDTO.getQuarto().getId());
+        verify(authService, times(1)).validarProprioUsuarioOuAdmin(reserva.getUsuario().getId());
+        verify(repository, times(1)).findById(idExistente);
+        verify(quartoRepository, times(1)).findById(novoQuarto.getId());
         verifyNoInteractions(reservaMapper);
         verify(quartoRepository, never()).save(any());
         verify(repository, never()).save(any());
@@ -284,17 +301,19 @@ public class ReservaServiceTests {
     @Test
     void atualizarReserva_DeveLancarForbiddenException_QuandoValidacaoPermissaoFalhar() {
 
-        doThrow(ForbiddenException.class).when(authService).validarProprioUsuarioOuAdmin(idExistente);
+        when(repository.findById(idExistente)).thenReturn(Optional.of(reserva));
+        doThrow(ForbiddenException.class).when(authService).validarProprioUsuarioOuAdmin(reserva.getUsuario().getId());
 
         assertThrows(ForbiddenException.class, () -> {
             service.atualizarReserva(idExistente, reservaDTO);
         });
 
-        verify(authService, times(1)).validarProprioUsuarioOuAdmin(idExistente);
-        verifyNoInteractions(repository);
+        verify(authService, times(1)).validarProprioUsuarioOuAdmin(reserva.getUsuario().getId());
+        verify(repository, times(1)).findById(idExistente);
         verifyNoInteractions(reservaMapper);
         verifyNoInteractions(quartoRepository);
     }
+
 
     @Test
     void deletarReservaPorId_DeveExecutarComSucesso_QuandoIdExistir() {
@@ -302,6 +321,9 @@ public class ReservaServiceTests {
         assertDoesNotThrow(() -> {
             service.deletarReservaPorId(idExistente);
         });
+
+        verify(repository, times(1)).existsById(idExistente);
+        verify(repository, times(1)).deleteById(idExistente);
     }
 
     @Test
@@ -321,7 +343,7 @@ public class ReservaServiceTests {
     }
 
     @Test
-    void deletarUsuarioPorId_DeveLancarForbiddenException_QuandoValidacaoPermissaoFalhar() {
+    void deletarReservaPorId_DeveLancarForbiddenException_QuandoValidacaoPermissaoFalhar() {
 
         doThrow(new ForbiddenException("Acesso negado")).when(authService).validarProprioUsuarioOuAdmin(idExistente);
 
