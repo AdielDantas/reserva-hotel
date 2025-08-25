@@ -290,6 +290,9 @@ public class UsuarioServiceTests {
         assertDoesNotThrow(() -> {
             service.deletarUsuarioPorId(idExistente);
         });
+
+        verify(repository, times(1)).existsById(idExistente);
+        verify(repository, times(1)).deleteById(idExistente);
     }
 
     @Test

@@ -92,6 +92,8 @@ public class UsuarioService implements UserDetailsService {
     @Transactional(readOnly = true)
     public Page<UsuarioMinDTO> buscarTodosUsuariosPaginados(Pageable pageable) {
 
+        authService.validarSomenteAdmin();
+
         log.debug("Buscando usuários paginados - Pagina: {}, Tamanho: {}",
                 pageable.getPageNumber(),
                 pageable.getPageSize());
@@ -178,9 +180,13 @@ public class UsuarioService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
+        log.debug("Autenticação solicitada para o email: {}", username);
+
         List<UserDetailsProjection> result = repository.searchUserAndRolesByEmail(username);
 
         if (result.isEmpty()) {
+
+            log.warn("Falha na autenticação - Usuário não encontrado com o email: {}", username);
             throw new UsernameNotFoundException("Email não localizado: " + username);
         }
 
@@ -195,6 +201,7 @@ public class UsuarioService implements UserDetailsService {
             ));
         }
 
+        log.info("Usuário autenticado com sucesso - Email: {}", usuario.getEmail());
         return usuario;
     }
 
