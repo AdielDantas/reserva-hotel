@@ -114,6 +114,7 @@ public class ReservaService {
 
     @Transactional
     public ReservaDTO atualizarReserva(Long id, ReservaDTO reservaDTO) {
+
         log.info("Iniciando atualização da reserva com ID: {}", id);
 
         try {
@@ -177,16 +178,26 @@ public class ReservaService {
     @Transactional(propagation = Propagation.SUPPORTS)
     public void deletarReservaPorId(Long id) {
 
+        log.info("Iniciando deleção da reserva com ID: {}", id);
+
+        log.debug("Validando permissão do usuário para deletar a reserva ID: {}", id);
         authService.validarProprioUsuarioOuAdmin(id);
+        log.debug("Permissão validada para a reserva ID: {}", id);
 
         if (!repository.existsById(id)) {
+
+            log.warn("Reserva não encontrada com ID: {}", id);
             throw new ResourceNotFoundException("Reserva não encontrado com o ID: " + id);
         }
         try {
             repository.deleteById(id);
-        }
-        catch (DataIntegrityViolationException e) {
+            log.info("Reserva deletada com sucesso - ID: {}", id);
+        } catch (DataIntegrityViolationException e) {
+            log.error("Falha ao deletar reserva com ID: {} devido a integridade referencial", id, e);
             throw new DataBaseException("Falha de integridade referencial");
+        } catch (Exception e) {
+            log.error("Erro inesperado ao deletar reserva com ID: {}", id, e);
+            throw new RuntimeException("Erro inesperado ao deletar reserva", e);
         }
     }
 }
