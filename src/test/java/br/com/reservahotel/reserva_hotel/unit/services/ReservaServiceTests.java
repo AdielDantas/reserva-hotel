@@ -78,6 +78,7 @@ public class ReservaServiceTests {
 
         when(repository.findById(idExistente)).thenReturn(Optional.of(reserva));
         when(repository.findById(idInexistente)).thenReturn(Optional.empty());
+        when(repository.findById(idDependente)).thenReturn(Optional.of(reserva));
 
         when(repository.save(reserva)).thenReturn(reserva);
 
@@ -322,8 +323,10 @@ public class ReservaServiceTests {
             service.deletarReservaPorId(idExistente);
         });
 
-        verify(repository, times(1)).existsById(idExistente);
-        verify(repository, times(1)).deleteById(idExistente);
+        verify(repository, times(1)).findById(idExistente); // ← Busca a reserva
+        verify(repository, times(1)).deleteById(idExistente); // ← Deleta a reserva
+        verify(quartoRepository, times(1)).save(any(Quarto.class));
+        verify(authService, times(1)).validarProprioUsuarioOuAdmin(anyLong());
     }
 
     @Test
@@ -344,8 +347,10 @@ public class ReservaServiceTests {
 
     @Test
     void deletarReservaPorId_DeveLancarForbiddenException_QuandoValidacaoPermissaoFalhar() {
+        Long usuarioIdDaReserva = reserva.getUsuario().getId();
 
-        doThrow(new ForbiddenException("Acesso negado")).when(authService).validarProprioUsuarioOuAdmin(idExistente);
+        doThrow(new ForbiddenException("Acesso negado"))
+                .when(authService).validarProprioUsuarioOuAdmin(usuarioIdDaReserva);
 
         ForbiddenException exception = assertThrows(ForbiddenException.class, () -> {
             service.deletarReservaPorId(idExistente);
@@ -353,8 +358,10 @@ public class ReservaServiceTests {
 
         assertThat(exception.getMessage()).isEqualTo("Acesso negado");
 
-        verify(authService, times(1)).validarProprioUsuarioOuAdmin(idExistente);
-        verifyNoMoreInteractions(repository);
+        verify(repository, times(1)).findById(idExistente);
+        verify(authService, times(1)).validarProprioUsuarioOuAdmin(usuarioIdDaReserva);
+        verify(repository, never()).deleteById(anyLong());
+        verifyNoInteractions(quartoRepository);
         verifyNoInteractions(reservaMapper);
     }
 }

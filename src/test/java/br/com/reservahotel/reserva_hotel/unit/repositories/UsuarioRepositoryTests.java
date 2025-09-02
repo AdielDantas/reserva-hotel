@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
 public class UsuarioRepositoryTests {
@@ -81,17 +82,20 @@ public class UsuarioRepositoryTests {
         assertThat(resultado.getNumber()).isEqualTo(0);
         assertThat(resultado.getSize()).isEqualTo(3);
     }
-
     @Test
     void saveDevePersistirNovoUsuarioEIncrementarIdQuandoIdForNull() {
         Usuario usuario = UsuarioFactory.criarUsuarioAdmin();
         usuario.setId(null);
+        usuario.setEmail("usuario.teste.unique@email.com"); // Email único
+
         Usuario salvo = repository.save(usuario);
 
         assertThat(salvo.getId()).isNotNull();
         assertThat(salvo.getNome()).isEqualTo(usuario.getNome());
-        assertThat(salvo.getEmail()).isEqualTo(usuario.getEmail());
+        assertThat(salvo.getEmail()).isEqualTo("usuario.teste.unique@email.com");
         assertThat(salvo.getSenha()).isEqualTo(usuario.getSenha());
+
+        assertTrue(repository.existsById(salvo.getId()));
     }
 
     @Test

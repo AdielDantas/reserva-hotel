@@ -6,23 +6,18 @@ import br.com.reservahotel.reserva_hotel.exceptions.ResourceNotFoundException;
 import br.com.reservahotel.reserva_hotel.model.dto.ReservaDTO;
 import br.com.reservahotel.reserva_hotel.model.entities.Quarto;
 import br.com.reservahotel.reserva_hotel.model.entities.Reserva;
-import br.com.reservahotel.reserva_hotel.model.entities.Usuario;
 import br.com.reservahotel.reserva_hotel.model.mappers.ReservaMapper;
 import br.com.reservahotel.reserva_hotel.repositories.QuartoRepository;
 import br.com.reservahotel.reserva_hotel.repositories.ReservaRepository;
 import br.com.reservahotel.reserva_hotel.repositories.UsuarioRepository;
-import jakarta.persistence.EntityNotFoundException;
+import br.com.reservahotel.reserva_hotel.util.DataValidator;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.HttpStatus;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -87,9 +82,10 @@ public class ReservaService {
 
     @Transactional
     public ReservaDTO criarReserva(ReservaDTO reservaDTO) {
-
-        log.info("Iniciando criação de reserva no quart9o ID: {}, pelo usuário ID: {}",
+        log.info("Iniciando criação de reserva no quarto ID: {}, pelo usuário ID: {}",
                 reservaDTO.getQuarto().getId(), reservaDTO.getUsuario().getId());
+
+        DataValidator.validarDatasReserva(reservaDTO.getCheckin(), reservaDTO.getCheckout());
 
         Quarto quarto = quartoRepository.findById(reservaDTO.getQuarto().getId())
                 .orElseThrow(() -> {
@@ -104,18 +100,20 @@ public class ReservaService {
 
         log.debug("Quarto ID: {} disponível. Prosseguindo com a criação da reserva", reservaDTO.getQuarto().getId());
 
-            Reserva reserva = reservaMapper.toEntity(reservaDTO);
-            reserva = repository.save(reserva);
-            log.info("Reserva ID: {} criada com sucesso para o usuário {}",reserva.getId(), reserva.getUsuario());
+        Reserva reserva = reservaMapper.toEntity(reservaDTO);
+        reserva = repository.save(reserva);
+        log.info("Reserva ID: {} criada com sucesso para o usuário {}", reserva.getId(), reserva.getUsuario());
 
-            quarto.setDisponivel(false);
-            return reservaMapper.toDto(reserva);
+        quarto.setDisponivel(false);
+        return reservaMapper.toDto(reserva);
     }
 
     @Transactional
     public ReservaDTO atualizarReserva(Long id, ReservaDTO reservaDTO) {
 
         log.info("Iniciando atualização da reserva com ID: {}", id);
+
+        DataValidator.validarDatasReserva(reservaDTO.getCheckin(), reservaDTO.getCheckout());
 
         try {
             // Busca a reserva existente
@@ -180,18 +178,25 @@ public class ReservaService {
 
         log.info("Iniciando deleção da reserva com ID: {}", id);
 
+        Reserva reserva = repository.findById(id)
+                .orElseThrow(() -> {
+                    log.warn("Reserva não encontrada com ID: {}", id);
+                    return new ResourceNotFoundException("Reserva não encontrada com o ID: " + id);
+                });
+
         log.debug("Validando permissão do usuário para deletar a reserva ID: {}", id);
-        authService.validarProprioUsuarioOuAdmin(id);
+        authService.validarProprioUsuarioOuAdmin(reserva.getUsuario().getId());
         log.debug("Permissão validada para a reserva ID: {}", id);
 
-        if (!repository.existsById(id)) {
-
-            log.warn("Reserva não encontrada com ID: {}", id);
-            throw new ResourceNotFoundException("Reserva não encontrado com o ID: " + id);
-        }
         try {
+            Quarto quarto = reserva.getQuarto();
+            quarto.setDisponivel(true);
+            quartoRepository.save(quarto);
+            log.debug("Quarto ID: {} liberado com sucesso", quarto.getId());
+
             repository.deleteById(id);
             log.info("Reserva deletada com sucesso - ID: {}", id);
+
         } catch (DataIntegrityViolationException e) {
             log.error("Falha ao deletar reserva com ID: {} devido a integridade referencial", id, e);
             throw new DataBaseException("Falha de integridade referencial");

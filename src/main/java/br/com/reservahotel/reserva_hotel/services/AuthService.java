@@ -7,6 +7,10 @@ import br.com.reservahotel.reserva_hotel.repositories.UsuarioRepository;
 import br.com.reservahotel.reserva_hotel.util.CustomUsuario;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.Nullable;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
@@ -20,6 +24,16 @@ public class AuthService {
     private CustomUsuario customUsuario;
 
     public void validarProprioUsuarioOuAdmin(Long usuarioId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null) {
+            throw new AuthenticationCredentialsNotFoundException("Usuário não autenticado");
+        }
+
+        if (!authentication.isAuthenticated()) {
+            throw new BadCredentialsException("Usuário não autenticado");
+        }
+
         Usuario usuario = usuarioLogado();
 
         if (!usuario.hasRole("ROLE_ADMIN") && !usuario.getId().equals(usuarioId)) {
