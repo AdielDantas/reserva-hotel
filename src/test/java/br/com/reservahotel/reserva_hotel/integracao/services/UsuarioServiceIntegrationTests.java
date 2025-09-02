@@ -36,15 +36,6 @@ public class UsuarioServiceIntegrationTests {
     @Autowired
     private UsuarioRepository repository;
 
-    @Autowired
-    private AuthService authService;
-
-    @Autowired
-    private UsuarioMapper usuarioMapper;
-
-    @Autowired
-    private TransactionTemplate transactionTemplate;
-
     private Long idExistente;
     private Long idInexistente;
     private Long idDependente;
