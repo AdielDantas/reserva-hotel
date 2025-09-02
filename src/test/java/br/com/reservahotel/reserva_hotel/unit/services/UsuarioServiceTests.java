@@ -138,7 +138,7 @@ public class UsuarioServiceTests {
     }
 
     @Test
-    void buscarUsuarioPorIdComReservas_DeveLancarResourceNotFoundException_QuandoIdNaoExistir() {
+    void buscarUsuarioPorIdComReservas_DeveLancarResourceNotFoundException_QuandoIdNaoExistirbuscarUsuarioPorIdComReservas_DeveLancarResourceNotFoundException_QuandoIdNaoExistir() {
 
         assertThrows(ResourceNotFoundException.class, () -> {
             service.buscarUsuarioPorIdComReservas(idInexistente);

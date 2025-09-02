@@ -15,9 +15,8 @@ import br.com.reservahotel.reserva_hotel.repositories.RoleRepository;
 import br.com.reservahotel.reserva_hotel.repositories.UsuarioRepository;
 import br.com.reservahotel.reserva_hotel.util.CustomUsuario;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.PersistenceException;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -151,7 +150,7 @@ public class UsuarioService implements UserDetailsService {
         }
     }
 
-    @Transactional(propagation = Propagation.SUPPORTS)
+    @Transactional(propagation = Propagation.REQUIRED)
     public void deletarUsuarioPorId(Long id) {
 
         log.info("Iniciando exclusão do usuário ID: {} (Solicitante: {})", id, customUsuario.usernameDoUsuarioLogado());
@@ -160,20 +159,25 @@ public class UsuarioService implements UserDetailsService {
         authService.validarProprioUsuarioOuAdmin(id);
 
         if (!repository.existsById(id)) {
-
             log.error("Falha ao excluir usuário ID: {}. Motivo: usuário não encontrado", id);
             throw new ResourceNotFoundException("Usuário não encontrado com o ID: " + id);
         }
+
         try {
             log.debug("Iniciando exclusão do usuário ID: {}", id);
             repository.deleteById(id);
 
+            repository.flush();
+
             log.info("Usuário ID: {} excluído com sucesso", id);
         }
-        catch (DataIntegrityViolationException e) {
-
-            log.error("Falha ao excluir usuário ID: {}. Motivo: Violação da integridade referecial", id);
+        catch (DataIntegrityViolationException | PersistenceException e) {
+            log.error("Falha ao excluir usuário ID: {}. Motivo: Violação da integridade referencial", id, e);
             throw new DataBaseException("Falha de integridade referencial");
+        }
+        catch (Exception e) {
+            log.error("Erro inesperado ao excluir usuário ID: {}", id, e);
+            throw e;
         }
     }
 

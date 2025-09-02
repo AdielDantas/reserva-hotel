@@ -4,6 +4,7 @@ INSERT INTO tb_usuario (nome, email, senha) VALUES ('Cliente Teste', 'cliente@gm
 INSERT INTO tb_usuario (nome, email, senha) VALUES ('João Silva', 'joao@gmail.com', '$2a$10$N7SkKCa3r17ga.i.dF9iy.BFUBL2n3b6Z1CWSZWi/qy7ABq/E6VpO');
 INSERT INTO tb_usuario (nome, email, senha) VALUES ('Maria Souza', 'maria@gmail.com', '$2a$10$N7SkKCa3r17ga.i.dF9iy.BFUBL2n3b6Z1CWSZWi/qy7ABq/E6VpO');
 INSERT INTO tb_usuario (nome, email, senha) VALUES ('Carlos Lima', 'carlos@gmail.com', '$2a$10$N7SkKCa3r17ga.i.dF9iy.BFUBL2n3b6Z1CWSZWi/qy7ABq/E6VpO');
+INSERT INTO tb_usuario (nome, email, senha) VALUES ('Usuario Sem Reserva', 'semreserva@gmail.com', '$2a$10$N7SkKCa3r17ga.i.dF9iy.BFUBL2n3b6Z1CWSZWi/qy7ABq/E6VpO');
 
 INSERT INTO tb_role(authority) VALUES ('ROLE_ADMIN');
 INSERT INTO tb_role(authority) VALUES ('ROLE_CLIENTE');
@@ -13,6 +14,7 @@ INSERT INTO tb_usuario_role(usuario_id, role_id) VALUES (2, 2);
 INSERT INTO tb_usuario_role(usuario_id, role_id) VALUES (3, 2);
 INSERT INTO tb_usuario_role(usuario_id, role_id) VALUES (4, 2);
 INSERT INTO tb_usuario_role(usuario_id, role_id) VALUES (5, 2);
+INSERT INTO tb_usuario_role(usuario_id, role_id) VALUES (6, 2);
 
 -- Inserção de quartos
 INSERT INTO tb_quarto (valor_diaria, disponivel, tipo) VALUES (350.00, FALSE, 'LUXO');     -- ocupado
