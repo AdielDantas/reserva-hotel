@@ -24,4 +24,9 @@ public class QuartoFactory {
         QuartoMinDTO quartoMinDTO = new QuartoMinDTO(1L, BigDecimal.valueOf(200.0), Boolean.TRUE, TipoQuarto.ECONOMICO);
         return quartoMinDTO;
     }
+
+    public static QuartoDTO criarQuartoDTOAtualizacao() {
+        QuartoDTO quartoDTO = new QuartoDTO(null, BigDecimal.valueOf(350.00), Boolean.FALSE, TipoQuarto.LUXO, new ArrayList<>());
+        return quartoDTO;
+    }
 }

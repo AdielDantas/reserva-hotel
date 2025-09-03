@@ -42,12 +42,23 @@ public class AuthService {
     }
 
     public void validarSomenteAdmin() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null) {
+            throw new AuthenticationCredentialsNotFoundException("Usuário não autenticado");
+        }
+
+        if (!authentication.isAuthenticated()) {
+            throw new BadCredentialsException("Usuário não autenticado");
+        }
+
         Usuario usuario = usuarioLogado();
 
         if (!usuario.hasRole("ROLE_ADMIN")) {
             throw new ForbiddenException("Acesso negado. Apenas administradores podem executar essa ação.");
         }
     }
+
 
     public Long resolveUsuarioId(@Nullable Long usuarioId, @Nullable String email) {
         if (usuarioId != null) return usuarioId;

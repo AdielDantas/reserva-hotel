@@ -9,11 +9,13 @@ import br.com.reservahotel.reserva_hotel.model.enums.TipoQuarto;
 import br.com.reservahotel.reserva_hotel.model.mappers.QuartoMapper;
 import br.com.reservahotel.reserva_hotel.model.mappers.QuartoMinMapper;
 import br.com.reservahotel.reserva_hotel.repositories.QuartoRepository;
+import br.com.reservahotel.reserva_hotel.util.DataValidator;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cglib.core.Local;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,16 +66,11 @@ public class QuartoService {
 
     @Transactional(readOnly = true)
     public List<QuartoDTO> listarQuartosDisponiveis(LocalDate dataInicial, LocalDate dataFinal) {
-
         log.debug("Listando quartos disponíveis - Data inicial: {}, Data final: {}", dataInicial, dataFinal);
 
+        DataValidator.validarDatasPeriodo(dataInicial, dataFinal);
+
         if (dataInicial != null && dataFinal != null) {
-
-            if (dataInicial.isAfter(dataFinal)) {
-                log.error("Datas inválidas - Data inicial {} é depois da data final {}", dataInicial, dataFinal);
-                throw new IllegalArgumentException("Data inicial não pode ser depois da data final");
-            }
-
             List<Quarto> quartos = repository.findDisponiveisPorPeriodo(dataInicial, dataFinal);
             log.info("Busca de quartos disponíveis por período concluída - Total: {}", quartos.size());
             return quartos.stream().map(quartoMapper::toDto).toList();
@@ -85,9 +82,14 @@ public class QuartoService {
     }
 
     @Transactional(readOnly = true)
-    public List<QuartoDTO> listarQuartoPorTipo(String tipoStr) {
-
+    public List<QuartoDTO> listarQuartoPorTipo(@Nullable String tipoStr) {
         log.debug("Listando quartos por tipo: {}", tipoStr);
+
+        if (tipoStr == null) {
+            log.info("Nenhum tipo informado, listando todos os quartos");
+            List<Quarto> quartos = repository.findAll();
+            return quartos.stream().map(quartoMapper::toDto).collect(Collectors.toList());
+        }
 
         try {
             TipoQuarto tipo = TipoQuarto.valueOf(tipoStr.toUpperCase());

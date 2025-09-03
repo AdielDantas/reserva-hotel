@@ -4,6 +4,7 @@ import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 @Slf4j
 @UtilityClass
@@ -54,5 +55,52 @@ public class DataValidator {
     public static long calcularDiasHospedagem(LocalDate checkin, LocalDate checkout) {
         validarDatasReserva(checkin, checkout);
         return java.time.temporal.ChronoUnit.DAYS.between(checkin, checkout);
+    }
+
+    public static void validarDatasPeriodo(LocalDate dataInicial, LocalDate dataFinal) {
+        // Verifica se ambas são nulas (consulta sem período)
+        if (dataInicial == null && dataFinal == null) {
+            log.debug("Consulta sem período específico");
+            return; // Permite consulta sem período
+        }
+
+        // Verifica se apenas uma é nula (erro)
+        if ((dataInicial != null && dataFinal == null) || (dataInicial == null && dataFinal != null)) {
+            log.error("Datas incompletas - Data inicial: {}, Data final: {}", dataInicial, dataFinal);
+            throw new IllegalArgumentException("Ambas as datas devem ser fornecidas ou ambas nulas");
+        }
+
+        // Verifica se data inicial é depois da data final
+        if (dataInicial.isAfter(dataFinal)) {
+            log.error("Datas inválidas - Data inicial {} é depois da data final {}", dataInicial, dataFinal);
+            throw new IllegalArgumentException("Data inicial não pode ser depois da data final");
+        }
+
+        // Verifica se as datas estão no passado
+        LocalDate hoje = LocalDate.now();
+        if (dataInicial.isBefore(hoje)) {
+            log.error("Data inicial ({}) não pode ser no passado", dataInicial);
+            throw new IllegalArgumentException("Data inicial não pode ser no passado");
+        }
+
+        if (dataFinal.isBefore(hoje)) {
+            log.error("Data final ({}) não pode ser no passado", dataFinal);
+            throw new IllegalArgumentException("Data final não pode ser no passado");
+        }
+
+        log.debug("Período validado com sucesso: Data inicial={}, Data final={}", dataInicial, dataFinal);
+    }
+
+    public static void validarPeriodoCompleto(LocalDate dataInicial, LocalDate dataFinal, int diasMinimos) {
+        validarDatasPeriodo(dataInicial, dataFinal);
+
+        if (dataInicial != null && dataFinal != null) {
+            long diasPeriodo = ChronoUnit.DAYS.between(dataInicial, dataFinal);
+
+            if (diasPeriodo < diasMinimos) {
+                log.error("Período muito curto: {} dias (mínimo: {})", diasPeriodo, diasMinimos);
+                throw new IllegalArgumentException("Período mínimo é " + diasMinimos + " dias");
+            }
+        }
     }
 }

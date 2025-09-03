@@ -158,8 +158,8 @@ public class QuartoServiceTests {
 
     @Test
     void listarQuartosDisponiveis_DeveRetornarListaDeQuartoDTO_QuandoDatasForemValidas() {
-        LocalDate dataInicial = LocalDate.of(2025, 1, 1);
-        LocalDate dataFinal = LocalDate.of(2025, 1, 10);
+        LocalDate dataInicial = LocalDate.of(2035, 1, 1);
+        LocalDate dataFinal = LocalDate.of(2035, 1, 10);
 
         when(repository.findDisponiveisPorPeriodo(dataInicial, dataFinal)).thenReturn(List.of(quarto));
 
@@ -199,8 +199,8 @@ public class QuartoServiceTests {
 
     @Test
     void listarQuartosDisponiveis_DeveRetornarListaVazia_QuandoNaoExistiremQuartosDisponiveisPorPeriodo() {
-        LocalDate dataInicial = LocalDate.of(2025, 2, 1);
-        LocalDate dataFinal = LocalDate.of(2025, 2, 5);
+        LocalDate dataInicial = LocalDate.of(2035, 2, 1);
+        LocalDate dataFinal = LocalDate.of(2035, 2, 5);
 
         when(repository.findDisponiveisPorPeriodo(dataInicial, dataFinal)).thenReturn(List.of());
 
